@@ -2,7 +2,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { REGISTERATION_VERIFICATION_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
+import { AppRoles, REGISTERATION_VERIFICATION_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
 
 import { IToken } from 'src/models/auth/tokens.model';
 import { IRegistrationVerification } from 'src/models/auth/registerationVerification.model';
@@ -83,6 +83,9 @@ export class AuthService {
 
     async createUserWithGithub(user_name: string, role: string) {
         console.log('createUserWithGithub');
+        if (!AppRoles.DEVELOPER.includes(role) && !AppRoles.MENTOR.includes(role)) {
+            throw new BadRequestException({ message: "role not found" })
+        }
         const githubUserRes = await this.getGitHubUserData(user_name);
 
         if (githubUserRes.name == "" || githubUserRes.name == null) {

@@ -3,13 +3,10 @@ import { Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/commo
 import { AuthMiddlewareService } from "./auth.middleware.service";
 
 const exculded_routes = [
-    '/doctors/login',
-    '/doctors/register',
-    '/operators/login',
-    '/places/insertPlaceWithOperator',
-    '/patients/login',
-    '/patients/insert',
-    '/configs/getPlayStoreVersions'
+    '/auth/sign-up',
+    '/auth/sign-in',
+    '/auth/google',
+    '/auth/github',
 ];
 
 @Injectable()
@@ -17,8 +14,14 @@ export class AuthMiddleWare implements NestMiddleware {
     constructor(public authService: AuthMiddlewareService) { }
 
     async checkToken(req) {
-        console.log(req.baseUrl);
-        if (exculded_routes.includes(req.baseUrl)) {
+        console.log('=> ' + req.baseUrl);
+        let excluded = false;
+        for (const idx in exculded_routes) { if (exculded_routes[idx].includes(req.baseUrl) || req.baseUrl.includes(exculded_routes[idx])) { excluded = true; break; } else{
+             console.log(exculded_routes[idx] + " -- " + req.baseUrl)
+        } }
+
+
+        if (excluded) {
             console.log('excluded-route');
             return true;
         }
@@ -28,7 +31,7 @@ export class AuthMiddleWare implements NestMiddleware {
                 console.log('Valid-Token');
             }
             else {
-                console.log('Not-Valid-Token');
+                console.log('In-Valid-Token');
             }
             return token_valid;
         }
