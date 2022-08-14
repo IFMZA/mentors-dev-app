@@ -7,6 +7,8 @@ const exculded_routes = [
     '/auth/sign-in',
     '/auth/google',
     '/auth/github',
+    '/forgot-password',
+    '/verify'
 ];
 
 @Injectable()
