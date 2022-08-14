@@ -11,11 +11,10 @@ export const MentorAvailableSlotsSchema = new mongoose.Schema({
 }, { collection: "MentorAvailableSlots" });
 
 export interface IMentorAvailableSlot {
-    packageId: string;
+    slotId: string;
     mentorId: string;
-    packageType: string;
-    price: number;
-    currency: string;
-    features: string[];
-    updatedAt: Date;
+    availableDate: Date;
+    fromTime: number;
+    ToTime: number;
+    createdAt: string;
 };

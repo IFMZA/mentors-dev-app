@@ -15,6 +15,7 @@ import { comparePasswords, getHashed } from '../common/utils/hashPassword'
 import { get_token } from 'src/common/auth/tokenGenerator';
 import user_github_insert_dto from './DTOs/user.github.insert';
 import verify_password_update_dto from 'src/forgot-password/DTOs/verify-password.update';
+import userUpdateDTO from './DTOs/user.update';
 // import userRegisterDTO from './DTOs/user.register';
 
 
@@ -223,11 +224,70 @@ export class UsersService {
         await this._userModel.findOneAndUpdate({ userId: foundUser.userId }, { isVerified: true });
         await this._regVerify.deleteOne({ userId: foundUser.userId });
     }
+
     private async _checkUserExistenceThenGet(createdBody: { email: string }) {
         const foundUser = await this.findOne({ email: createdBody.email });
         if (!foundUser)
             throw new NotFoundException({ message: 'email not found' });
 
         return { foundUser, parsedEmail: createdBody.email };
+    }
+
+    async updateUser(token: string, user_update_dto: userUpdateDTO) {
+        console.log('update user basic');
+        let userId = "";
+        // get user id from token
+        const foundToken = await this._tokenModel.findOne({ token: token });
+        userId = foundToken.userId;
+
+        return await this._userModel.findOneAndUpdate({
+            userId: userId
+        }, user_update_dto, { upsert: false, new: true });
+
+        // const user_insert = new this._userModel({
+        //     userId: generateUUID(),
+        //     name: user_register_dto.name,
+        //     title: user_register_dto.title,
+        //     password: await getHashed(user_register_dto.password),
+        //     location: user_register_dto.location,
+        //     languages: user_register_dto.languages,
+        //     skills: user_register_dto.skills,
+        //     bio: user_register_dto.bio,
+        //     experience: user_register_dto.experience,
+        //     currentCompany: user_register_dto.currentCompany,
+        //     education: user_register_dto.education,
+        //     doneClientsCount: user_register_dto.doneClientsCount,
+        //     role: user_register_dto.role,
+        //     authMethod: AuthMethods.LOCAL,
+        //     isVerified: false
+        // });
+        // if (user_register_dto.email != null) { user_insert.email = user_register_dto.email; }
+        // if (user_register_dto.phone != null) { user_insert.phone = user_register_dto.phone; }
+        // const result = await user_insert.save();
+
+        // const verificationCode = generateRandomNumber(6).toString();
+        // await this._regVerify.create({
+        //     userId: user_insert.userId,
+        //     verificationCode: verificationCode,
+        //     isConfirmed: false,
+        //     updatedAt: Date.now()
+        // })
+
+
+        // const token = get_token(user_insert.userId);
+        // const token_insert = new this._tokenModel({
+        //     token: token,
+        //     userId: user_insert.userId
+        // });
+        // await token_insert.save();
+        // const _return = {
+        //     ...result.toJSON(),
+        //     token: token
+        // };
+        // console.log('user - insert - result');
+        // console.log(_return);
+        // return _return;
+        //send email with the verification code
+        //insert in verification collection
     }
 }

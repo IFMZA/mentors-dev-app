@@ -10,11 +10,12 @@ import { RolesGuard } from './common/auth/roles.guard';
 import { AuthModule } from './auth/auth.module';
 import { ForgotPasswordModule } from './forgot-password/forgot-password.module';
 import { AuthMiddlewareModule } from './common/token-middleware/auth.middleware.module';
+import { MentorPackagesModule } from './mentorPackages/mentorPackages.module';
 
 @Module({
     imports: [
         MongooseModule.forRoot(dbConnection.getConnection().connection, { dbName: dbConnection.getConnection().dbName }),
-        UsersModule, AuthModule, ForgotPasswordModule, AuthMiddlewareModule
+        UsersModule, AuthModule, ForgotPasswordModule, AuthMiddlewareModule, MentorPackagesModule
     ],
     controllers: [AppController],
     providers: [AppService],

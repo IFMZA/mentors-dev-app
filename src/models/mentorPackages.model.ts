@@ -21,3 +21,11 @@ export interface IMentorPackage {
     features: string[];
     updatedAt: Date;
 };
+
+MentorPackagesSchema.set('toJSON', {
+    transform: (doc, ret, options) => {
+        // ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+    },
+});

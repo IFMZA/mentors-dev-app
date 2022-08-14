@@ -3,7 +3,6 @@ import * as mongoose from 'mongoose';
 import { AppRoles, AuthMethods } from 'src/common/constants';
 
 export const UsersSchema = new mongoose.Schema({
-    _id: { type: String },
     userId: { type: String, unique: true, required: false },
     name: { type: String, unique: false, required: false },
     title: { type: String, unique: false, required: false },
@@ -29,7 +28,6 @@ export const UsersSchema = new mongoose.Schema({
 }, { collection: "Users" });
 
 export interface IUser {
-    _id: string;
     userId: string;
     name: string;
     title: string;

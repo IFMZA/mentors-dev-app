@@ -3,32 +3,28 @@
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsMobilePhone, IsString } from 'class-validator';
-import { AppRoles } from 'src/common/constants';
 
-class userRegisterDTO {
+class userUpdateDTO {
     @ApiProperty()
-    @IsDefined()
+    @IsOptional()
     name: string;
 
     @ApiProperty()
-    @IsDefined()
+    @IsOptional()
     title: string;
 
     @ApiProperty()
-    @IsDefined()
     @IsEmail()
+    @IsOptional()
     email: string;
 
     @ApiProperty()
     @IsMobilePhone()
+    @IsOptional()
     phone: string;
 
     @ApiProperty()
-    @IsDefined()
-    @IsString()
-    password: string;
-
-    @ApiProperty()
+    @IsOptional()
     @IsOptional()
     location: string;
 
@@ -59,10 +55,6 @@ class userRegisterDTO {
     @ApiProperty()
     @IsOptional()
     doneClientsCount: number;
-
-    @ApiProperty({ enum: [AppRoles.DEVELOPER, AppRoles.MENTOR] })
-    @IsOptional()
-    role: string;
 }
 
-export default userRegisterDTO;
+export default userUpdateDTO;

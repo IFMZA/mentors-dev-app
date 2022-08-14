@@ -19,7 +19,7 @@ export class AuthController {
     @ApiBody({ type: userRegisterDTO })
     @Post('sign-up')
     async register(
-        @Body('user') user_register_dto: userRegisterDTO,
+        @Body() user_register_dto: userRegisterDTO,
     ) {
         console.log(user_register_dto);
         return await this._authService.register(user_register_dto)
