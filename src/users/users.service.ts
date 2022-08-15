@@ -48,12 +48,15 @@ export class UsersService {
             isVerified: false
         });
         if (user_register_dto.email != null) { user_insert.email = user_register_dto.email; }
+        else { console.log('delete'); delete user_insert.email; }
         if (user_register_dto.phone != null) { user_insert.phone = user_register_dto.phone; }
+        else { console.log('delete'); delete user_insert.phone; }
         const result = await user_insert.save();
 
         const verificationCode = generateRandomNumber(6).toString();
         await this._regVerify.create({
             userId: user_insert.userId,
+            email: user_insert.email ? user_insert.email : "",
             verificationCode: verificationCode,
             isConfirmed: false,
             updatedAt: Date.now()

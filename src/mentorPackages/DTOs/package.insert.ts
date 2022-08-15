@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsMobilePhone, IsString } from 'class-validator';
+import { IsDefined, IsString } from 'class-validator';
 import { currencies, PackageTypes } from 'src/common/constants';
 
 class packageInsertDTO {

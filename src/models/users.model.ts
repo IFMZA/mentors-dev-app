@@ -7,7 +7,7 @@ export const UsersSchema = new mongoose.Schema({
     name: { type: String, unique: false, required: false },
     title: { type: String, unique: false, required: false },
     email: { type: String, unique: true, lowercase: true, trim: true, required: false },
-    phone: { type: String, unique: true, lowercase: true, trim: true, required: false },
+    phone: { type: String, index: true, unique: true, lowercase: true, trim: true, sparse: true, required: false },
     password: { type: String, required: false },
     profileImage: { type: String, required: false },
     location: { type: String, required: false },

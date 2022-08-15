@@ -4,6 +4,7 @@ export const REGISTERATION_VERIFICATION_MODEL_NAME = "registerverify";
 export const USER_MODEL_NAME = "user";
 export const FORGOT_PASSWORD_MODEL_NAME = "forgotPassword";
 export const MENTOR_PACKAGE_MODEL_NAME = "mentor-package";
+export const MENTOR_AVAILABLE_SLOT_MODEL_NAME = "mentor-slots";
 
 
 

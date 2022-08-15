@@ -1,17 +1,17 @@
 /* eslint-disable prettier/prettier */
 
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsMobilePhone, IsString } from 'class-validator';
 import { AppRoles } from 'src/common/constants';
 
 class userRegisterDTO {
-    @ApiProperty()
-    @IsDefined()
+    @ApiProperty({required: false})
+    @IsOptional()
     name: string;
 
-    @ApiProperty()
-    @IsDefined()
+    @ApiProperty({required: false})
+    @IsOptional()
     title: string;
 
     @ApiProperty()
@@ -19,8 +19,9 @@ class userRegisterDTO {
     @IsEmail()
     email: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsMobilePhone()
+    @IsOptional()
     phone: string;
 
     @ApiProperty()
@@ -28,35 +29,35 @@ class userRegisterDTO {
     @IsString()
     password: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     location: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     languages: string[];
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     skills: string[];
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     bio: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     experience: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     currentCompany: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     education: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @IsOptional()
     doneClientsCount: number;
 
