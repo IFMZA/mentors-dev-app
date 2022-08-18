@@ -39,14 +39,17 @@ export class AuthService {
         googleUser.firstName = googleUserRes.given_name;
         googleUser.lastName = googleUserRes.family_name;
         googleUser.email = googleUserRes.email;
-        googleUser.profileImg.original = googleUserRes.picture.split("=s")[0] + '=s500-c';
-        googleUser.profileImg.thumbnail = googleUserRes.picture;
+        googleUser.profileImg = {
+            original: googleUserRes.picture.split("=s")[0] + '=s500-c',
+            thumbnail: googleUserRes.picture
+        };
         const user = await this._userServise.createUserWithGoogle(googleUser, role)
         return user;
     }
 
 
     private async getGoogleUserData(access_token: string) {
+        console.log('google-Auth');
         let data;
         const params = {
             alt: 'json',
@@ -58,8 +61,10 @@ export class AuthService {
             })
             if (res.data) {
                 data = res.data
+                console.log(res.data)
             }
         } catch (error) {
+            console.log(error);
             if (error.response) {
                 // Request made and server responded
                 console.log(error.response.data);

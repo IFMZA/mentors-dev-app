@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import userRegisterDTO from './DTOs/user.register';
 import userLoginDTO from './DTOs/user.login';
+import googleAuthDTO from './DTOs/google.auth';
 
 
 
@@ -37,12 +38,12 @@ export class AuthController {
 
     //Login
     //- GOOGLE
-    @Post('/google/:access_token:role')
+    @ApiBody({ type: googleAuthDTO })
+    @Post('/google')
     async loginWithGoogle(
-        @Param('access_token') access_token: string,
-        @Param('role') role: string
+        @Body() google_auth_dto: googleAuthDTO
     ) {
-        return await this._authService.createUserWithGoogle(access_token, role)
+        return await this._authService.createUserWithGoogle(google_auth_dto.access_token, google_auth_dto.role)
     }
 
     //- GITHUB

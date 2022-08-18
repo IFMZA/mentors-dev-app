@@ -5,6 +5,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import slotInsertDTO from './DTOs/mentorAvailableSlots.insert';
 import slotUpdateDTO from './DTOs/mentorAvailableSlots.update';
+import slotSaveManyDTO from './DTOs/mentorAvailableSlots.many';
 
 
 
@@ -39,6 +40,14 @@ export class MentorAvailableSlotsController {
         @Body() slot_update_dto: slotUpdateDTO,
     ) {
         return await this._SlotsService.update(slotId, slot_update_dto)
+    }
+
+    @Post('/saveManySlots')
+    async saveManySlots(
+        @Req() request: Request,
+        @Body() slot_insert_dto: [slotSaveManyDTO],
+    ) {
+        return await this._SlotsService.saveManySlots(request.headers.authorization.replace('Bearer ', ''), slot_insert_dto);
     }
 
     @Delete('/delete/:slotId')
