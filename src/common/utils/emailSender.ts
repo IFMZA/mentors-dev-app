@@ -14,7 +14,7 @@ export async function sendEmailVerification_Template(email, verify_code) {
     sgMail.setApiKey(SENDGRID_API_KEY);
     sgMail.setSubstitutionWrappers('{{', '}}'); // Configure the substitution tag wrappers globally
     const msg = {
-        to: 'islam.farid16@gmail.com',
+        to: email,
         from: 'support@techmentors.co',
         subject: 'Hello world',
         text: 'Hello plain world!',
