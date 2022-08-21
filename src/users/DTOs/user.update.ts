@@ -3,6 +3,7 @@
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsMobilePhone, IsString } from 'class-validator';
+import { currencies } from 'src/common/constants';
 
 class userUpdateDTO {
     @ApiProperty()
@@ -30,6 +31,14 @@ class userUpdateDTO {
 
     @ApiProperty()
     @IsOptional()
+    website: string;
+
+    @ApiProperty({ enum: [currencies.EGP, currencies.USD] })
+    @IsOptional()
+    preferredCurrency: string;
+
+    @ApiProperty()
+    @IsOptional()
     languages: string[];
 
     @ApiProperty()
@@ -51,10 +60,6 @@ class userUpdateDTO {
     @ApiProperty()
     @IsOptional()
     education: string;
-
-    @ApiProperty()
-    @IsOptional()
-    doneClientsCount: number;
 }
 
 export default userUpdateDTO;

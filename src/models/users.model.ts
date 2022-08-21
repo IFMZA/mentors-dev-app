@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import * as mongoose from 'mongoose';
-import { AppRoles, AuthMethods } from 'src/common/constants';
+import { AppRoles, AuthMethods, currencies } from 'src/common/constants';
 
 export const UsersSchema = new mongoose.Schema({
     userId: { type: String, unique: true, required: false },
@@ -11,6 +11,8 @@ export const UsersSchema = new mongoose.Schema({
     password: { type: String, required: false },
     profileImage: { type: String, required: false },
     location: { type: String, required: false },
+    website: { type: String, required: false },
+    preferredCurreny: { type: String, enum: [currencies.EGP, currencies.USD], required: false },
     languages: { type: [String], required: false },
     skills: { type: [String], required: false },
     bio: { type: String, required: false },
@@ -36,6 +38,8 @@ export interface IUser {
     password: string;
     profileImage: string;
     location: string;
+    website: string;
+    preferredCurreny: string;
     languages: string[];
     skills: string;
     bio: string;

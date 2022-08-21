@@ -33,6 +33,9 @@ export class AuthService {
 
     // Login With Google
     async createUserWithGoogle(access_token: string, role: string) {
+        if (!AppRoles.DEVELOPER.includes(role) && !AppRoles.MENTOR.includes(role)) {
+            throw new BadRequestException({ message: "role not found" })
+        }
         const googleUserRes = await this.getGoogleUserData(access_token);
         const googleUser = new user_google_insert_dto;
         googleUser.googleId = googleUserRes.id;
@@ -86,12 +89,12 @@ export class AuthService {
 
 
 
-    async createUserWithGithub(user_name: string, role: string) {
+    async createUserWithGithub(access_token: string, role: string) {
         console.log('createUserWithGithub');
         if (!AppRoles.DEVELOPER.includes(role) && !AppRoles.MENTOR.includes(role)) {
             throw new BadRequestException({ message: "role not found" })
         }
-        const githubUserRes = await this.getGitHubUserData(user_name);
+        const githubUserRes = await this.getGitHubUserData(access_token);
 
         if (githubUserRes.name == "" || githubUserRes.name == null) {
             throw new BadRequestException({ message: "name not found" })
@@ -119,10 +122,15 @@ export class AuthService {
     }
 
 
-    private async getGitHubUserData(user_name: string) {
+    private async getGitHubUserData(access_token: string) {
         let data = null;
         try {
-            const res = await axios.get(`https://api.github.com/users/${user_name}`)
+            const res2 = await axios.get(`https://api.github.com/users/${'user_name'}`);
+            const res = await axios.get(`https://api.github.com/user`, {
+                headers: {
+                    'Authorization': `token ${access_token}`
+                }
+            });
             if (res.data) {
                 if (res.data.message == "Not Found") {
                     data = null;

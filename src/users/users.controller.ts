@@ -1,11 +1,15 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Param, Post, Put, Query, Req } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-var */
+
+import { Body, Controller, Get, Param, Post, Put, Query, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import reset_password_update_dto from './DTOs/reset.password.update';
 import verify_password_update_dto from 'src/forgot-password/DTOs/verify-password.update';
 import userUpdateDTO from './DTOs/user.update';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import { create_session_meeting } from '../common/utils/googleMeetCreator'
 
 
 
@@ -27,11 +31,55 @@ export class UsersController {
             reset_password_dto.newPassword);
     }
 
-    @Post('/verify')
-    async verifyCode(
-        @Body() verify_password_dto: verify_password_update_dto,
+    @Get('/test')
+    async test(
     ) {
-        return await this._usersService.verifyCode(verify_password_dto)
+
+        // var date = "2022-08-22";
+        // var time = "11:30";
+        // var duration = 45;
+
+        // var start = date + "T" + time;
+        // var start_date = new Date(start);
+        // var end_date = new Date(start_date.getTime() + duration * 60000)
+
+        // console.log('start')
+        // console.log(start_date)
+        // console.log('end')
+        // console.log(end_date)
+
+
+
+
+        var moment = require('moment-timezone');
+
+        // var newDateObj = moment(start).toDate();
+        // var newDateObj = moment.tz(start, "Africa/Cairo").format();
+        // console.log('start')
+        // console.log(new Date(newDateObj));
+
+        // var newDateObj = moment.tz(start, "Africa/Cairo").add(45, 'm').format();
+        // console.log('start')
+        // console.log(new Date(newDateObj));
+
+
+        var a = moment.utc("2022-08-22T07:15:00Z").tz("Africa/Cairo");
+        // var a = moment.tz("2022-08-23T09:00:30Z", "Australia/Perth");
+        // var b = a.clone().tz('Australia/Perth')
+        return a.format();
+    }
+
+    @Get('/verify/:email&:verify_code')
+    async verifyCode(
+        @Param('email') email: string,
+        @Param('verify_code') verify_code: string,
+        @Res() res: Response
+    ) {
+        const verify_password_dto = new verify_password_update_dto();
+        verify_password_dto.email = email;
+        verify_password_dto.verificationCode = verify_code;
+        const role = await this._usersService.verifyCode(verify_password_dto);
+        return res.redirect(`http://localhost:3000/new/${role}`);
     }
 
     @Put('/update')

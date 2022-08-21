@@ -5,6 +5,7 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import userRegisterDTO from './DTOs/user.register';
 import userLoginDTO from './DTOs/user.login';
 import googleAuthDTO from './DTOs/google.auth';
+import githubAuthDTO from './DTOs/github.auth';
 
 
 
@@ -47,12 +48,12 @@ export class AuthController {
     }
 
     //- GITHUB
-    @Post('/github/:user_name/:role')
+    @ApiBody({ type: githubAuthDTO })
+    @Post('/github')
     async loginWithGitHub(
-        @Param('user_name') user_name: string,
-        @Param('role') role: string
+        @Body() github_auth_dto: githubAuthDTO
     ) {
-        return await this._authService.createUserWithGithub(user_name, role);
+        return await this._authService.createUserWithGithub(github_auth_dto.access_token, github_auth_dto.role);
     }
 
 

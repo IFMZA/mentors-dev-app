@@ -57,10 +57,6 @@ class userRegisterDTO {
     @IsOptional()
     education: string;
 
-    @ApiProperty({required: false})
-    @IsOptional()
-    doneClientsCount: number;
-
     @ApiProperty({ enum: [AppRoles.DEVELOPER, AppRoles.MENTOR] })
     @IsOptional()
     role: string;
