@@ -6,7 +6,7 @@ import { IsDefined, IsString } from 'class-validator';
 class slotInsertDTO {
 
 
-    @ApiProperty()
+    @ApiProperty({ example: "2022-08-25" })
     @IsDefined()
     @IsDate()
     availableDate: Date;

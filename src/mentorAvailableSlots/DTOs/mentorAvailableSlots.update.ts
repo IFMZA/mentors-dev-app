@@ -4,17 +4,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 class slotUpdateDTO {
-    @ApiProperty()
+    @ApiProperty({ example: "2022-08-25" })
     @IsOptional()
     @IsDate()
     availableDate: Date;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, example: "09:00" })
     @IsOptional()
     @IsString()
     fromTime: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, example: "09:00" })
     @IsOptional()
     @IsString()
     ToTime: string;
