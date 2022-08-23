@@ -6,11 +6,11 @@ import { IsDefined, IsMobilePhone, IsString } from 'class-validator';
 import { AppRoles } from 'src/common/constants';
 
 class userRegisterDTO {
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     name: string;
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     title: string;
 
@@ -19,7 +19,7 @@ class userRegisterDTO {
     @IsEmail()
     email: string;
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsMobilePhone()
     @IsOptional()
     phone: string;
@@ -29,31 +29,37 @@ class userRegisterDTO {
     @IsString()
     password: string;
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
+    website: string;
+
+    @ApiProperty({ required: false })
+    preferredCurreny: string;
+
+    @ApiProperty({ required: false })
     @IsOptional()
     location: string;
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     languages: string[];
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     skills: string[];
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     bio: string;
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     experience: string;
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     currentCompany: string;
 
-    @ApiProperty({required: false})
+    @ApiProperty({ required: false })
     @IsOptional()
     education: string;
 

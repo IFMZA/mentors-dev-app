@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { MentorAvailableSlotsService } from './mentorAvailableSlots.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import slotInsertDTO from './DTOs/mentorAvailableSlots.insert';
 import slotUpdateDTO from './DTOs/mentorAvailableSlots.update';
@@ -26,10 +26,11 @@ export class MentorAvailableSlotsController {
         return await this._SlotsService.createSlot(request.headers.authorization.replace('Bearer ', ''), slot_insert_dto);
     }
 
+    @ApiBody({ type: [slotInsertDTO] })
     @Post('/createMany')
     async createManySlots(
-        @Req() request: Request,
         @Body() slot_insert_dto: [slotInsertDTO],
+        @Req() request: Request,
     ) {
         return await this._SlotsService.createManySlots(request.headers.authorization.replace('Bearer ', ''), slot_insert_dto);
     }
@@ -42,6 +43,7 @@ export class MentorAvailableSlotsController {
         return await this._SlotsService.update(slotId, slot_update_dto)
     }
 
+    @ApiBody({ type: [slotSaveManyDTO] })
     @Post('/saveManySlots')
     async saveManySlots(
         @Req() request: Request,

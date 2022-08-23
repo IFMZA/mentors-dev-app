@@ -23,33 +23,33 @@ export class SessionsController {
         return await this._sessionsService.createSession(request.headers.authorization.replace('Bearer ', ''), session_insert_dto);
     }
 
-    // @Put('/update/:packageId')
-    // async updatePackage(
-    //     @Param('packageId') packageId: string,
-    //     @Body() package_update_dto: packageUpdateDTO,
-    // ) {
-    //     return await this._packagesService.update(packageId, package_update_dto)
-    // }
+    @Put('/update/:sessionId')
+    async updateSession(
+        @Param('sessionId') sessionId: string,
+        @Body() session_update_dto: sessionUpdateDTO,
+    ) {
+        return await this._sessionsService.update(sessionId, session_update_dto)
+    }
 
-    // @Delete('/delete/:packageId')
-    // async deletePackage(
-    //     @Param('packageId') packageId: string
-    // ) {
-    //     return await this._packagesService.delete(packageId)
-    // }
+    @Delete('/delete/:sessionId')
+    async deleteSession(
+        @Param('sessionId') sessionId: string
+    ) {
+        return await this._sessionsService.delete(sessionId)
+    }
 
-    // @Get('/getSelfPackages')
-    // async getSelfPackages(
-    //     @Req() request: Request,
-    // ) {
-    //     return await this._packagesService.findSelfPackages(request.headers.authorization.replace('Bearer ', ''))
-    // }
+    @Get('/getSessions/:mentorId')
+    async getMentorSessions(
+        @Param('mentorId') mentorId: string,
+    ) {
+        return await this._sessionsService.findByMentorId(mentorId);
+    }
 
-    // @Get('/getPackages/:mentorId')
-    // async getPackages(
-    //     @Param('mentorId') mentorId: string,
-    // ) {
-    //     return await this._packagesService.findByMentorId(mentorId);
-    // }
+    @Get('/getSessions/:developerId')
+    async getDeveloperSessions(
+        @Param('developerId') developerId: string,
+    ) {
+        return await this._sessionsService.findByDeveloperId(developerId);
+    }
 }
 

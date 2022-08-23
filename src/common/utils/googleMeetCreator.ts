@@ -10,8 +10,10 @@ export async function create_session_meeting(date: string, startTime: string, me
     const moment = require('moment-timezone');
     console.log('create_session_meeting')
     const start = date + "T" + startTime;
-    const newDateObj = moment.tz(start, "Africa/Cairo").format();
-    const newDateObj_2 = moment.tz(start, "Africa/Cairo").add(meeting_duration, 'm').format();
+    console.log(start)
+    console.log(meeting_duration)
+    const newDateObj = moment.tz(start, time_zone).format();
+    const newDateObj_2 = moment.tz(start, time_zone).add(meeting_duration, 'm').format();
     const starting_at = newDateObj;
     const ending_at = newDateObj_2;
 

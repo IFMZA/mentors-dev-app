@@ -3,7 +3,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MENTOR_PACKAGE_MODEL_NAME, PackageTypes, sessionStatus, SESSION_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
-import { create_session_meeting } from '../common/utils/googleMeetCreator'
+import { create_session_meeting, delete_session_meeting } from '../common/utils/googleMeetCreator'
 import { ISession } from '../models/sessions.model';
 import { IToken } from '../models/auth/tokens.model';
 import { IMentorPackage } from '../models/mentorPackages.model';
@@ -32,9 +32,6 @@ export class SessionsService {
         // Get the time frame (duration)
         const duration = await this.getPackageDuration(session_insert_dto.packageId);
         if (duration == null) { throw new ConflictException({ message: "meeting duration error" }); }
-
-        // session_insert_dto.timeZone = 'Africa/Cairo';
-
         console.log('create meeting link');
         let google_meet_response = new googleMeetResponseDTO();
         google_meet_response = await create_session_meeting(
@@ -62,31 +59,63 @@ export class SessionsService {
     }
 
 
-    // async update(packageId: string, package_update_dto: packageUpdateDTO) {
-    //     console.log('update package');
-    //     return await this._packageModel.findOneAndUpdate({
-    //         packageId: packageId
-    //     }, package_update_dto, { upsert: false, new: true });
-    // }
+    async update(sessionId: string, session_update_dto: sessionUpdateDTO) {
+        console.log('update package');
+        const found_session = await this._sessionModel.findOne({
+            sessionId: sessionId
+        });
+        if (!found_session) {
+            throw new ConflictException({ message: "session already deleted" });
+        }
+        //delete old meeting link
+        await delete_session_meeting(found_session.eventId);
 
-    // async delete(packageId: string) {
-    //     console.log('delete package');
-    //     return await this._packageModel.findOneAndDelete({ packageId: packageId });
-    // }
+        // Get the time frame (duration)
+        const duration = await this.getPackageDuration(found_session.packageId);
+        if (duration == null) { throw new ConflictException({ message: "meeting duration error" }); }
 
-    // async findSelfPackages(token: string) {
-    //     console.log('find self package');
-    //     let userId = "";
-    //     // get user id from token
-    //     const foundToken = await this._tokenModel.findOne({ token: token });
-    //     userId = foundToken.userId;
-    //     return await this._packageModel.find({ mentorId: userId });
-    // }
+        let google_meet_response = new googleMeetResponseDTO();
+        google_meet_response = await create_session_meeting(
+            session_update_dto.bookedDate, session_update_dto.startTime, duration, session_update_dto.timeZone
+        );
+        if (google_meet_response.busy && google_meet_response.busy == true) {
+            throw new ConflictException({ message: "busy time slot" });
+        }
 
-    // async findByMentorId(mentor_id: string) {
-    //     console.log('find mentor package');
-    //     return await this._packageModel.find({ mentorId: mentor_id });
-    // }
+        return await this._sessionModel.findOneAndUpdate({
+            sessionId: sessionId
+        }, {
+                bookedDate: session_update_dto.bookedDate,
+                startTime: google_meet_response.start,
+                endTime: google_meet_response.end,
+                timeZone: session_update_dto.timeZone,
+                meetingLink: google_meet_response.meet_link,
+                eventId: google_meet_response.event_id
+            }, { upsert: false, new: true });
+    }
+
+    async delete(sessionId: string) {
+        console.log('delete session');
+        const found_session = await this._sessionModel.findOne({
+            sessionId: sessionId
+        });
+        if (!found_session) {
+            throw new ConflictException({ message: "session already deleted" });
+        }
+        //delete old meeting link
+        await delete_session_meeting(found_session.eventId);
+        return await this._sessionModel.findOneAndDelete({ sessionId: sessionId });
+    }
+
+    async findByMentorId(mentor_id: string) {
+        console.log('find mentor sessions');
+        return await this._sessionModel.find({ mentorId: mentor_id });
+    }
+
+    async findByDeveloperId(developer_id: string) {
+        console.log('find developer sessions');
+        return await this._sessionModel.find({ developerId: developer_id });
+    }
 
 
     async getPackageDuration(packageId: string): Promise<number> {

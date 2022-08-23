@@ -9,7 +9,7 @@ import reset_password_update_dto from './DTOs/reset.password.update';
 import verify_password_update_dto from 'src/forgot-password/DTOs/verify-password.update';
 import userUpdateDTO from './DTOs/user.update';
 import { Request, Response } from 'express';
-import { create_session_meeting } from '../common/utils/googleMeetCreator'
+import { create_session_meeting, delete_session_meeting } from '../common/utils/googleMeetCreator'
 
 
 
@@ -48,7 +48,7 @@ export class UsersController {
         // console.log('end')
         // console.log(end_date)
 
-
+        // await delete_session_meeting("2hc3kumdkull1813dqe22r170o");
 
 
         var moment = require('moment-timezone');

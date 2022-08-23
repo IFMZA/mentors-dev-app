@@ -11,15 +11,15 @@ class slotInsertDTO {
     @IsDate()
     availableDate: Date;
 
-    @ApiProperty()
+    @ApiProperty({ example: "09:00" })
     @IsDefined()
     @IsString()
-    fromTime: number;
+    fromTime: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: "09:30" })
     @IsDefined()
     @IsString()
-    ToTime: number;
+    ToTime: string;
 }
 
 export default slotInsertDTO;

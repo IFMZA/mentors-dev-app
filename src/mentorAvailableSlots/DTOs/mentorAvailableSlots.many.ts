@@ -10,20 +10,20 @@ class slotSaveManyDTO {
     @IsOptional()
     slotId: string;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: false, example: "2022-08-25" })
     @IsOptional()
     @IsDate()
     availableDate: Date;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: false, example: "09:00" })
     @IsOptional()
     @IsString()
-    fromTime: number;
+    fromTime: string;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: false , example: "09:30"})
     @IsOptional()
     @IsString()
-    ToTime: number;
+    ToTime: string;
 
     @ApiProperty({ required: true, enum: [OpTypes.NEW, OpTypes.MODIFIED, OpTypes.DELETED] })
     @IsDefined()

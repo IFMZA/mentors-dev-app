@@ -12,12 +12,12 @@ class slotUpdateDTO {
     @ApiProperty()
     @IsOptional()
     @IsString()
-    fromTime: number;
+    fromTime: string;
 
     @ApiProperty()
     @IsOptional()
     @IsString()
-    ToTime: number;
+    ToTime: string;
 }
 
 export default slotUpdateDTO;

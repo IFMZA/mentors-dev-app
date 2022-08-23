@@ -36,6 +36,8 @@ export class UsersService {
             name: user_register_dto.name,
             title: user_register_dto.title,
             password: await getHashed(user_register_dto.password),
+            website: user_register_dto.website,
+            preferredCurreny: user_register_dto.preferredCurreny,
             location: user_register_dto.location,
             languages: user_register_dto.languages,
             skills: user_register_dto.skills,

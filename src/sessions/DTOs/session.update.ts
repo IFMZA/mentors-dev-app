@@ -14,7 +14,7 @@ class sessionUpdateDTO {
 
     @ApiProperty()
     @IsDefined()
-    endTime: string;
+    timeZone: string;
 }
 
 export default sessionUpdateDTO;
