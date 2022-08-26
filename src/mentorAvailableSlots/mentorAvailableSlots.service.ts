@@ -60,7 +60,7 @@ export class MentorAvailableSlotsService {
             slots_list_to_insert.push(slot_insert);
         });
 
-        return await this._slotModel.insertMany(slot_list_insert_dto);
+        return await this._slotModel.insertMany(slots_list_to_insert);
     }
 
 

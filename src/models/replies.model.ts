@@ -6,7 +6,7 @@ export const RepliesSchema = new mongoose.Schema({
     replyId: { type: String, unique: true, required: false },
     commentId: { type: String, required: false },
     userId: { type: String, required: false },
-    userType: { type: String, enum: [AppRoles.MENTOR, AppRoles.DEVELOPER], required: false },
+    role: { type: String, enum: [AppRoles.MENTOR, AppRoles.DEVELOPER], required: false },
     replyText: { type: String, required: false },
     createdAt: { type: Date, required: false },
     isEdited: { type: Boolean, default: false, required: false },
