@@ -7,7 +7,15 @@ export const MENTOR_PACKAGE_MODEL_NAME = "mentor-package";
 export const MENTOR_AVAILABLE_SLOT_MODEL_NAME = "mentor-slots";
 export const SESSION_MODEL_NAME = "mentor-session";
 
+export const COMMENT_MODEL_NAME = "comment";
+export const COMMENT_LIKE_MODEL_NAME = "comment-like";
+export const REPLY_MODEL_NAME = "reply";
+export const REPLY_LIKE_MODEL_NAME = "reply-like";
+
+
 export const MENTORS_LIST_PAGE_SIZE = 30;
+export const COMMENTS_LIST_PAGE_SIZE = 5;
+
 
 export enum MentorOrderByProperties {
     RATING = 'rating',

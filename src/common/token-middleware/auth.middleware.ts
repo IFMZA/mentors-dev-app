@@ -9,6 +9,8 @@ const exculded_routes = [
     '/auth/github',
     '/forgot-password',
     '/verify',
+    '/getMentors',
+    '/getMentorById',
     '/test'
 ];
 

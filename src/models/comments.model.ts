@@ -5,7 +5,7 @@ import { AppRoles } from 'src/common/constants';
 export const CommentsSchema = new mongoose.Schema({
     commentId: { type: String, unique: true, required: false },
     userId: { type: String, required: false },
-    role: { type: String, enum: [AppRoles.MENTOR, AppRoles.DEVELOPER], required: false },
+    role: { type: String, enum: Object.values(AppRoles), required: false },
     commentText: { type: String, required: false },
     createdAt: { type: Date, required: false },
     isEdited: { type: Boolean, default: false, required: false },
@@ -21,5 +21,5 @@ export interface IComment {
     createdAt: Date;
     isEdited: boolean;
     editedAt: Date;
-    likeCount: boolean;
+    likeCount: number;
 };

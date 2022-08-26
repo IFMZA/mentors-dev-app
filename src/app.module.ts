@@ -13,12 +13,14 @@ import { AuthMiddlewareModule } from './common/token-middleware/auth.middleware.
 import { MentorPackagesModule } from './mentorPackages/mentorPackages.module';
 import { MentorAvailableSlotsModule } from './mentorAvailableSlots/mentorAvailableSlots.module';
 import { SessionsModule } from './sessions/sessions.module';
+import { CommentsModule } from './comments/comments.module';
+import { RepliesModule } from './replies/replies.module';
 
 @Module({
     imports: [
         MongooseModule.forRoot(dbConnection.getConnection().connection, { dbName: dbConnection.getConnection().dbName }),
         UsersModule, AuthModule, ForgotPasswordModule, AuthMiddlewareModule, MentorPackagesModule, MentorAvailableSlotsModule,
-        SessionsModule
+        SessionsModule, CommentsModule, RepliesModule
     ],
     controllers: [AppController],
     providers: [AppService],

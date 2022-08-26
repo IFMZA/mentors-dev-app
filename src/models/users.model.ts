@@ -23,7 +23,7 @@ export const UsersSchema = new mongoose.Schema({
     doneClientsCount: { type: Number, default: 0, required: false },
     rate: { type: Number, default: 0, required: false },
     wallletBalance: { type: Number, default: 0, required: false },
-    role: { type: String, enum: [AppRoles.MENTOR, AppRoles.DEVELOPER], required: false },
+    role: { type: String, enum: Object.values(AppRoles), required: false },
     authMethod: { type: String, enum: [AuthMethods.GOOGLE, AuthMethods.GITHUB, AuthMethods.LOCAL], required: false },
     authCredentials: { type: [Object], required: false },
     isVerified: { type: Boolean, required: false },

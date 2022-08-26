@@ -6,7 +6,7 @@ export const ReviewsSchema = new mongoose.Schema({
     mentorId: { type: String, required: false },
     developerId: { type: String, required: false },
     comment: { type: String, required: false },
-    starsCount: { type: String, required: false },
+    starsCount: { type: Number, required: false },
     createdAt: { type: Date, required: false }
 }, { collection: "Reviews" });
 
@@ -15,6 +15,6 @@ export interface IReview {
     mentorId: string;
     developerId: string;
     comment: string;
-    starsCount: string;
+    starsCount: number;
     createdAt: Date;
 };
