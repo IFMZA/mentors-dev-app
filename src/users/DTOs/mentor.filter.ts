@@ -1,20 +1,20 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsNumber, IsOptional } from 'class-validator';
-import { languages, MentorOrderByProperties, OrderByOrdering, skills } from 'src/common/constants';
+import { MentorOrderByProperties, OrderByOrdering } from 'src/common/constants';
 
 
 class mentor_filter_dto {
 
     @ApiProperty({ required: false })
     @IsOptional()
-    company: string;
+    searchKeyword: string;
 
     @ApiProperty({ required: false })
     @IsOptional()
     name: string;
 
-    @ApiProperty({ required: false, enum: Object.values(skills) })
+    @ApiProperty({ required: false })
     @IsOptional()
     skill: string;
 
@@ -26,7 +26,7 @@ class mentor_filter_dto {
     @IsOptional()
     country: string;
 
-    @ApiProperty({ required: false, enum: Object.values(languages) })
+    @ApiProperty({ required: false })
     @IsOptional()
     language: string;
 

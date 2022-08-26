@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MENTOR_AVAILABLE_SLOT_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
@@ -28,6 +28,17 @@ export class MentorAvailableSlotsService {
         // get user id from token
         const foundToken = await this._tokenModel.findOne({ token: token });
         userId = foundToken.userId;
+
+        //Check Slot Availability
+        let isValidSlot = true;
+        isValidSlot = await this.checkSlotAvailability(userId, slot_insert_dto.availableDate, slot_insert_dto.fromTime);
+        if (!isValidSlot)
+            throw new ConflictException({
+                message: `slot conflicts with another existing one 
+            ${slot_insert_dto.availableDate + " F:" + slot_insert_dto.fromTime + " T:" + slot_insert_dto.ToTime}`
+            });
+
+
         const slot_insert = new this._slotModel({
             mentorId: userId,
             slotId: generateUUID(),
@@ -40,6 +51,24 @@ export class MentorAvailableSlotsService {
         return result;
     }
 
+    async checkSlotAvailability(userId: string, new_available_date: Date, new_from_time: string) {
+        const new_start_time = new Date(new_available_date + " " + new_from_time);
+        const db_slots = await this.findAll({ mentorId: userId, availableDate: new_available_date });
+        let isValidSlot = true;
+        if (db_slots) {
+            for (let idx = 0; idx < db_slots.length; idx++) {
+                const db_slot = db_slots[idx];
+                const old_start_time = new Date(db_slot.availableDate + " " + db_slot.fromTime);
+                const old_end_time = new Date(db_slot.availableDate + " " + db_slot.ToTime);;
+                if (new_start_time >= old_start_time && new_start_time <= old_end_time) {
+                    isValidSlot = false;
+                    break;
+                }
+            }
+        }
+        return isValidSlot;
+    }
+
     async createManySlots(token: string, slot_list_insert_dto: [slotInsertDTO]) {
         console.log('create many slot');
         let userId = "";
@@ -48,6 +77,19 @@ export class MentorAvailableSlotsService {
         userId = foundToken.userId;
 
         const slots_list_to_insert = [];
+
+        //Check Availability
+        for (let idx = 0; idx < slot_list_insert_dto.length; idx++) {
+            const slot_insert_dto = slot_list_insert_dto[idx];
+            let isValidSlot = true;
+            isValidSlot = await this.checkSlotAvailability(userId, slot_insert_dto.availableDate, slot_insert_dto.fromTime);
+            if (!isValidSlot)
+                throw new ConflictException({
+                    message: `slot conflicts with another existing one 
+                ${slot_insert_dto.availableDate + " F:" + slot_insert_dto.fromTime + " T:" + slot_insert_dto.ToTime}`
+                });
+        }
+
         slot_list_insert_dto.forEach(slot_insert_dto => {
             const slot_insert = new this._slotModel({
                 mentorId: userId,
@@ -71,9 +113,41 @@ export class MentorAvailableSlotsService {
         const foundToken = await this._tokenModel.findOne({ token: token });
         userId = foundToken.userId;
 
+
+
+        const delete_list_response = [];
+        slot_list_dto.filter(function(element) { return element.opType == OpTypes.DELETED })
+            .forEach(async slot_delete_dto => {
+                const delete_response = await this._slotModel.findOneAndDelete({ slotId: slot_delete_dto.slotId });
+                delete_list_response.push(delete_response);
+            });
+
+        //Check Availability before update
+        const slots_to_check = slot_list_dto.filter(function(element) { return element.opType == OpTypes.MODIFIED || element.opType == OpTypes.NEW })
+        for (let idx = 0; idx < slots_to_check.length; idx++) {
+            const slot_insert_dto = slots_to_check[idx];
+            let isValidSlot = true;
+            isValidSlot = await this.checkSlotAvailability(userId, slot_insert_dto.availableDate, slot_insert_dto.fromTime);
+            if (!isValidSlot)
+                throw new ConflictException(
+                    {
+                        message: `slot conflicts with another existing one 
+                    ${slot_insert_dto.availableDate + " F:" + slot_insert_dto.fromTime + " T:" + slot_insert_dto.ToTime}`
+                    });
+        }
+
+        const update_list_response = [];
+        slot_list_dto.filter(function(element) { return element.opType == OpTypes.MODIFIED })
+            .forEach(async slot_update_dto => {
+                const _slotId = slot_update_dto.slotId;
+                delete slot_update_dto.slotId;
+                const update_response = await this._slotModel.findOneAndUpdate({
+                    slotId: _slotId
+                }, slot_update_dto, { upsert: false, new: true });
+                update_list_response.push(update_response);
+            });
+
         const slots_list_to_insert = [];
-
-
         slot_list_dto.filter(function(element) { return element.opType == OpTypes.NEW })
             .forEach(slot_insert_dto => {
                 const slot_insert = new this._slotModel({
@@ -87,22 +161,8 @@ export class MentorAvailableSlotsService {
                 slots_list_to_insert.push(slot_insert);
             });
         const insert_list_response = await this._slotModel.insertMany(slot_list_dto);
-        const update_list_response = [];
-        slot_list_dto.filter(function(element) { return element.opType == OpTypes.MODIFIED })
-            .forEach(async slot_update_dto => {
-                const _slotId = slot_update_dto.slotId;
-                delete slot_update_dto.slotId;
-                const update_response = await this._slotModel.findOneAndUpdate({
-                    slotId: _slotId
-                }, slot_update_dto, { upsert: false, new: true });
-                update_list_response.push(update_response);
-            });
-        const delete_list_response = [];
-        slot_list_dto.filter(function(element) { return element.opType == OpTypes.DELETED })
-            .forEach(async slot_delete_dto => {
-                const delete_response = await this._slotModel.findOneAndDelete({ slotId: slot_delete_dto.slotId });
-                delete_list_response.push(delete_response);
-            });
+
+
 
         return {
             ...insert_list_response,
@@ -114,6 +174,15 @@ export class MentorAvailableSlotsService {
 
     async update(slotId: string, slot_update_dto: slotUpdateDTO) {
         console.log('update package');
+        const mentor_id = await this.findMentorId({ slotId: slotId });
+        //Check Slot Availability
+        let isValidSlot = true;
+        isValidSlot = await this.checkSlotAvailability(mentor_id, slot_update_dto.availableDate, slot_update_dto.fromTime);
+        if (!isValidSlot)
+            throw new ConflictException({
+                message: `slot conflicts with another existing one 
+            ${slot_update_dto.availableDate + " F:" + slot_update_dto.fromTime + " T:" + slot_update_dto.ToTime}`
+            });
         return await this._slotModel.findOneAndUpdate({
             slotId: slotId
         }, slot_update_dto, { upsert: false, new: true });
@@ -136,5 +205,21 @@ export class MentorAvailableSlotsService {
     async findAvailableSlotsByMentorId(mentor_id: string) {
         console.log('find mentor slots');
         return await this._slotModel.find({ mentorId: mentor_id });
+    }
+
+    async findAll(query) {
+        const slt = await this._slotModel.find(query);
+        if (slt) {
+            return slt
+        }
+        return slt;
+    }
+
+    async findMentorId(query) {
+        const slt = await this._slotModel.findOne(query);
+        if (slt) {
+            return slt.toJSON().mentorId
+        }
+        return null;
     }
 }

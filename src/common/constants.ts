@@ -12,9 +12,13 @@ export const COMMENT_LIKE_MODEL_NAME = "comment-like";
 export const REPLY_MODEL_NAME = "reply";
 export const REPLY_LIKE_MODEL_NAME = "reply-like";
 
+export const REVIEW_MODEL_NAME = "review";
+
 
 export const MENTORS_LIST_PAGE_SIZE = 30;
 export const COMMENTS_LIST_PAGE_SIZE = 5;
+export const REVIEWS_LIST_PAGE_SIZE = 30;
+
 
 
 export enum MentorOrderByProperties {

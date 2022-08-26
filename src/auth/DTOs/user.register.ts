@@ -3,7 +3,7 @@
 import { IsEmail, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsMobilePhone, IsString } from 'class-validator';
-import { AppRoles, currencies, languages, skills } from 'src/common/constants';
+import { AppRoles } from 'src/common/constants';
 
 class userRegisterDTO {
     @ApiProperty({ required: false })
@@ -33,19 +33,22 @@ class userRegisterDTO {
     @IsOptional()
     website: string;
 
-    @ApiProperty({ required: false, enum: Object.values(currencies) })
+    // @ApiProperty({ required: false, enum: Object.values(currencies) })
+    @ApiProperty()
     @IsOptional()
     preferredCurreny: string;
 
     @ApiProperty({ required: false })
     @IsOptional()
-    location: string;
+    location: object;
 
-    @ApiProperty({ required: false, enum: Object.values(languages) })
+    // @ApiProperty({ required: false, enum: Object.values(languages) })
+    @ApiProperty()
     @IsOptional()
     languages: string[];
 
-    @ApiProperty({ required: false, enum: Object.values(skills) })
+    // @ApiProperty({ required: false, enum: Object.values(skills) })
+    @ApiProperty()
     @IsOptional()
     skills: string[];
 

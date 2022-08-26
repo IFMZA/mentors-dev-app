@@ -93,7 +93,6 @@ export class UsersService {
             name: google_user.firstName + " " + google_user.lastName,
             email: google_user.email,
             profileImage: google_user.profileImg.original ? google_user.profileImg.original : google_user.profileImg.thumbnail,
-            role: role,
             authMethod: AuthMethods.GOOGLE,
             isVerified: true,
             authCredentials: {
@@ -103,6 +102,7 @@ export class UsersService {
 
         if (!await this.findOne({ "authCredentials.googleId": google_user.googleId })) {
             user_insert['userId'] = generateUUID();
+            user_insert['role'] = role;
         }
         const result = await this._userModel.findOneAndUpdate({
             "authCredentials.googleId": google_user.googleId
@@ -134,8 +134,7 @@ export class UsersService {
             email: github_user.email,
             profileImage: github_user.avatar_url,
             bio: github_user.bio,
-            location: github_user.location,
-            role: role,
+            location: { country: github_user.location },
             authMethod: AuthMethods.GITHUB,
             isVerified: true,
             authCredentials: {
@@ -149,6 +148,7 @@ export class UsersService {
 
         if (!await this.findOne({ "authCredentials.id": github_user.id })) {
             user_insert['userId'] = generateUUID();
+            user_insert['role'] = role;
         }
         const result = await this._userModel.findOneAndUpdate({
             "authCredentials.id": github_user.id
@@ -290,10 +290,16 @@ export class UsersService {
         else {
             sortQuery = { createdAt: -1 };
         }
+        if (mentor_filter.searchKeyword) {
+            query["$or"] = [
+                { name: { $regex: new RegExp(mentor_filter.searchKeyword.trim(), 'i') } },
+                { title: { $regex: new RegExp(mentor_filter.searchKeyword.trim(), 'i') } },
+                { experience: { $regex: new RegExp(mentor_filter.searchKeyword.trim(), 'i') } },
+                { currentCompany: { $regex: new RegExp(mentor_filter.searchKeyword.trim(), 'i') } },
+                { bio: { $regex: new RegExp(mentor_filter.searchKeyword.trim(), 'i') } }
+            ];
+        }
 
-
-        if (mentor_filter.name) { query["name"] = { $regex: new RegExp(mentor_filter.name.trim(), 'i') } }
-        if (mentor_filter.company) { query["currentCompany"] = { $regex: new RegExp(mentor_filter.company.trim(), 'i') } }
         if (mentor_filter.country) { query["location.country"] = { $regex: new RegExp(mentor_filter.country.trim(), 'i') } }
         if (mentor_filter.language) { query["languages"] = { $in: [mentor_filter.language] } }
         if (mentor_filter.skill) { query["skills"] = { $in: [mentor_filter.skill] } }

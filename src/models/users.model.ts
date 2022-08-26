@@ -10,9 +10,9 @@ export const UsersSchema = new mongoose.Schema({
     phone: { type: String, index: true, unique: true, lowercase: true, trim: true, sparse: true, required: false },
     password: { type: String, required: false },
     profileImage: { type: String, required: false },
-    location: { type: String, required: false },
+    location: { type: Object, required: false },
     website: { type: String, required: false },
-    preferredCurreny: { type: String, enum: Object.values(currencies), required: false },
+    preferredCurreny: { type: String, required: false },
     languages: { type: [String], required: false },
     skills: { type: [String], required: false },
     bio: { type: String, required: false },
@@ -38,7 +38,7 @@ export interface IUser {
     phone: string;
     password: string;
     profileImage: string;
-    location: string;
+    location: object;
     website: string;
     preferredCurreny: string;
     languages: string[];

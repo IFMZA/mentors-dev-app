@@ -35,6 +35,20 @@ export class UsersController {
     async test(
     ) {
 
+        var _dateNewStart = new Date("2022-08-29 10:01");
+        // var _dateNewEnd = new Date("2022-08-29 09:00");
+
+
+        var _startdate = new Date("2022-08-29 22:00");
+        var _enddate = new Date("2022-08-29 23:00");
+
+        if(_dateNewStart >= _startdate && _dateNewStart <= _enddate){
+            return "Not valid"
+        }
+
+
+        return "valid"
+
         // var date = "2022-08-22";
         // var time = "11:30";
         // var duration = 45;
@@ -51,7 +65,7 @@ export class UsersController {
         // await delete_session_meeting("2hc3kumdkull1813dqe22r170o");
 
 
-        var moment = require('moment-timezone');
+        // var moment = require('moment-timezone');
 
         // var newDateObj = moment(start).toDate();
         // var newDateObj = moment.tz(start, "Africa/Cairo").format();
@@ -63,10 +77,11 @@ export class UsersController {
         // console.log(new Date(newDateObj));
 
 
-        var a = moment.utc("2022-08-22T07:15:00Z").tz("Africa/Cairo");
+        // var a = moment.utc("2022-08-22T07:15:00Z").tz("Africa/Cairo");
         // var a = moment.tz("2022-08-23T09:00:30Z", "Australia/Perth");
         // var b = a.clone().tz('Australia/Perth')
-        return a.format();
+        //a.format();
+        // return _date;
     }
 
     @Get('/verify/:email&:verify_code')

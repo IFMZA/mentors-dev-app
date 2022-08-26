@@ -15,12 +15,13 @@ import { MentorAvailableSlotsModule } from './mentorAvailableSlots/mentorAvailab
 import { SessionsModule } from './sessions/sessions.module';
 import { CommentsModule } from './comments/comments.module';
 import { RepliesModule } from './replies/replies.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
     imports: [
         MongooseModule.forRoot(dbConnection.getConnection().connection, { dbName: dbConnection.getConnection().dbName }),
         UsersModule, AuthModule, ForgotPasswordModule, AuthMiddlewareModule, MentorPackagesModule, MentorAvailableSlotsModule,
-        SessionsModule, CommentsModule, RepliesModule
+        SessionsModule, CommentsModule, RepliesModule, ReviewsModule
     ],
     controllers: [AppController],
     providers: [AppService],

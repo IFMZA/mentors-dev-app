@@ -11,8 +11,6 @@ class githubAuthDTO {
     access_token: string;
 
     @ApiProperty({ enum: [AppRoles.DEVELOPER, AppRoles.MENTOR] })
-    @IsDefined()
-    @IsString()
     role: string;
 
 }

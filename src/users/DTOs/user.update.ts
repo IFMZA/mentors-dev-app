@@ -26,21 +26,23 @@ class userUpdateDTO {
 
     @ApiProperty({ required: false })
     @IsOptional()
-    location: string;
+    location: object;
 
     @ApiProperty({ required: false })
     @IsOptional()
     website: string;
 
-    @ApiProperty({ required: false, enum: Object.values(currencies) })
+    @ApiProperty({ required: false })
     @IsOptional()
     preferredCurrency: string;
 
-    @ApiProperty({ required: false, enum: Object.values(languages), isArray: true, example: [languages.Arabic, languages.English, languages.Germany] })
+    // @ApiProperty({ required: false, enum: Object.values(languages), isArray: true, example: [languages.Arabic, languages.English, languages.Germany] })
+    @ApiProperty()
     @IsOptional()
     languages: string[];
 
-    @ApiProperty({ required: false, enum: Object.values(skills), isArray: true, example: [skills.html, skills.css, skills.javascript] })
+    // @ApiProperty({ required: false, enum: Object.values(skills), isArray: true, example: [skills.html, skills.css, skills.javascript] })
+    @ApiProperty()
     @IsOptional()
     skills: string[];
 

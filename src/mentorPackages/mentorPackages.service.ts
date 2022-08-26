@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MENTOR_PACKAGE_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
@@ -25,6 +25,13 @@ export class MentorPackagesService {
         // get user id from token
         const foundToken = await this._tokenModel.findOne({ token: token });
         userId = foundToken.userId;
+
+        //check the same package type exist before
+        const foundPkg = await this.findOne({ mentorId: userId, packageType: package_insert_dto.packageType });
+        if (foundPkg)
+            throw new ConflictException({ message: `mentor already have ${package_insert_dto.packageType} package type`  });
+
+
         const package_insert = new this._packageModel({
             mentorId: userId,
             packageId: generateUUID(),
@@ -37,6 +44,7 @@ export class MentorPackagesService {
         const result = await package_insert.save();
         return result;
     }
+    
 
 
     async update(packageId: string, package_update_dto: packageUpdateDTO) {
@@ -63,5 +71,13 @@ export class MentorPackagesService {
     async findByMentorId(mentor_id: string) {
         console.log('find mentor package');
         return await this._packageModel.find({ mentorId: mentor_id });
+    }
+
+    async findOne(query) {
+        const pkg = await this._packageModel.findOne(query);
+        if (pkg) {
+            return pkg.toJSON()
+        }
+        return pkg;
     }
 }

@@ -11,7 +11,7 @@ class user_github_insert_dto {
     followers: number;
     following: number;
     bio: string;
-    location: string;
+    location: object;
 
 
     @IsDefined()
