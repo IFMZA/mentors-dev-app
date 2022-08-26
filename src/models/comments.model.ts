@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
 import * as mongoose from 'mongoose';
+import { AppRoles } from 'src/common/constants';
 
 export const CommentsSchema = new mongoose.Schema({
     commentId: { type: String, unique: true, required: false },
-    sessionId: { type: String, required: false },
-    developerId: { type: String, required: false },
+    userId: { type: String, required: false },
+    role: { type: String, enum: [AppRoles.MENTOR, AppRoles.DEVELOPER], required: false },
     commentText: { type: String, required: false },
     createdAt: { type: Date, required: false },
     isEdited: { type: Boolean, default: false, required: false },
@@ -14,8 +15,8 @@ export const CommentsSchema = new mongoose.Schema({
 
 export interface IComment {
     commentId: string;
-    sessionId: string;
-    developerId: string;
+    userId: string;
+    role: string;
     commentText: string;
     createdAt: Date;
     isEdited: boolean;

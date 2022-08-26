@@ -7,7 +7,7 @@ export const MentorPackagesSchema = new mongoose.Schema({
     mentorId: { type: String, required: false },
     packageType: { type: String, enum: [PackageTypes.MINUTES_15, PackageTypes.MINUTES_30, PackageTypes.HOURS_1], required: false },
     price: { type: Number, default: 0, required: false },
-    currency: { type: String, enum: [currencies.EGP, currencies.USD], required: false },
+    currency: { type: String, enum: Object.values(currencies), required: false },
     features: { type: [String], required: false },
     updatedAt: { type: Date, required: false }
 }, { collection: "MentorPackages" });

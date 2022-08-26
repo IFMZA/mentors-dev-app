@@ -15,7 +15,7 @@ class packageUpdateDTO {
     @IsNumber()
     price: number;
 
-    @ApiProperty({ enum: [currencies.EGP, currencies.USD] })
+    @ApiProperty({ enum: Object.values(currencies) })
     @IsOptional()
     @IsString()
     currency: string;

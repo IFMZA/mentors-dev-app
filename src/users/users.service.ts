@@ -2,7 +2,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AuthMethods, REGISTERATION_VERIFICATION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
+import { AppRoles, AuthMethods, MentorOrderByProperties, MENTORS_LIST_PAGE_SIZE, OrderByOrdering, REGISTERATION_VERIFICATION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
 
 import { IUser } from '../models/users.model';
 import { IRegistrationVerification } from 'src/models/auth/registerationVerification.model';
@@ -16,7 +16,8 @@ import { get_token } from 'src/common/auth/tokenGenerator';
 import user_github_insert_dto from './DTOs/user.github.insert';
 import verify_password_update_dto from 'src/forgot-password/DTOs/verify-password.update';
 import userUpdateDTO from './DTOs/user.update';
-import { sendEmailVerification_Template } from 'src/common/utils/emailSender'; '../common/utils/emailSender'
+import { sendEmailVerification_Template } from 'src/common/utils/emailSender'; import mentor_filter_dto from './DTOs/mentor.filter';
+'../common/utils/emailSender'
 // import userRegisterDTO from './DTOs/user.register';
 
 
@@ -254,5 +255,51 @@ export class UsersService {
         return await this._userModel.findOneAndUpdate({
             userId: userId
         }, user_update_dto, { upsert: false, new: true });
+    }
+
+    async getMentorById(mentor_id: string) {
+        const found_user = await this.findOne({ userId: mentor_id, role: AppRoles.MENTOR });
+        if (!found_user) {
+            throw new NotFoundException({ message: 'user not found' });
+        }
+        return found_user;
+    }
+
+    async getMentorsByFilterSort(mentor_filter: mentor_filter_dto) {
+        const _skip = MENTORS_LIST_PAGE_SIZE * mentor_filter.pageId;
+
+        console.log(mentor_filter);
+        const query = { role: AppRoles.MENTOR };
+        let sortQuery = {};
+        // eslint-disable-next-line prefer-const
+
+        if (mentor_filter.sortBy) {
+            if (mentor_filter.sortBy == MentorOrderByProperties.CREATION) {
+                if (mentor_filter.sortOrder == OrderByOrdering.ASC) { sortQuery["createdAt"] = 1 }
+                if (mentor_filter.sortOrder == OrderByOrdering.DESC) { sortQuery["createdAt"] = -1 }
+            }
+            if (mentor_filter.sortBy == MentorOrderByProperties.ALPHA) {
+                if (mentor_filter.sortOrder == OrderByOrdering.ASC) { sortQuery["name"] = 1 }
+                if (mentor_filter.sortOrder == OrderByOrdering.DESC) { sortQuery["name"] = -1 }
+            }
+            if (mentor_filter.sortBy == MentorOrderByProperties.RATING) {
+                if (mentor_filter.sortOrder == OrderByOrdering.ASC) { sortQuery["rate"] = 1 }
+                if (mentor_filter.sortOrder == OrderByOrdering.DESC) { sortQuery["rate"] = -1 }
+            }
+        }
+        else {
+            sortQuery = { createdAt: -1 };
+        }
+
+
+        if (mentor_filter.name) { query["name"] = { $regex: new RegExp(mentor_filter.name.trim(), 'i') } }
+        if (mentor_filter.company) { query["currentCompany"] = { $regex: new RegExp(mentor_filter.company.trim(), 'i') } }
+        if (mentor_filter.country) { query["location.country"] = { $regex: new RegExp(mentor_filter.country.trim(), 'i') } }
+        if (mentor_filter.language) { query["languages"] = { $in: [mentor_filter.language] } }
+        if (mentor_filter.skill) { query["skills"] = { $in: [mentor_filter.skill] } }
+        if (mentor_filter.onlineStatus) { query["onlineStatus"] = { $regex: new RegExp(mentor_filter.onlineStatus.trim(), 'i') } }
+
+        const found_users = await this._userModel.find(query, {}, { skip: _skip, limit: MENTORS_LIST_PAGE_SIZE }).sort(sortQuery);
+        return found_users;
     }
 }

@@ -1,65 +1,68 @@
 /* eslint-disable prettier/prettier */
 
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsMobilePhone, IsString } from 'class-validator';
-import { currencies } from 'src/common/constants';
+import { IsMobilePhone } from 'class-validator';
+import { currencies, languages, skills } from 'src/common/constants';
 
 class userUpdateDTO {
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     name: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     title: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsEmail()
     @IsOptional()
     email: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsMobilePhone()
     @IsOptional()
     phone: string;
 
-    @ApiProperty()
-    @IsOptional()
+    @ApiProperty({ required: false })
     @IsOptional()
     location: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     website: string;
 
-    @ApiProperty({ enum: [currencies.EGP, currencies.USD] })
+    @ApiProperty({ required: false, enum: Object.values(currencies) })
     @IsOptional()
     preferredCurrency: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, enum: Object.values(languages), isArray: true, example: [languages.Arabic, languages.English, languages.Germany] })
     @IsOptional()
     languages: string[];
 
-    @ApiProperty()
+    @ApiProperty({ required: false, enum: Object.values(skills), isArray: true, example: [skills.html, skills.css, skills.javascript] })
     @IsOptional()
     skills: string[];
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     bio: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     experience: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     currentCompany: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     education: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    onlineStatus: boolean;
 }
 
 export default userUpdateDTO;

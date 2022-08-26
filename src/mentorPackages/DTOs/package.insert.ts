@@ -15,7 +15,7 @@ class packageInsertDTO {
     @IsNumber()
     price: number;
 
-    @ApiProperty({ enum: [currencies.EGP, currencies.USD] })
+    @ApiProperty({ enum: Object.values(currencies) })
     @IsDefined()
     @IsString()
     currency: string;

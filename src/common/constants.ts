@@ -7,7 +7,18 @@ export const MENTOR_PACKAGE_MODEL_NAME = "mentor-package";
 export const MENTOR_AVAILABLE_SLOT_MODEL_NAME = "mentor-slots";
 export const SESSION_MODEL_NAME = "mentor-session";
 
+export const MENTORS_LIST_PAGE_SIZE = 30;
 
+export enum MentorOrderByProperties {
+    RATING = 'rating',
+    CREATION = 'creation',
+    ALPHA = 'alpha',
+}
+
+export enum OrderByOrdering {
+    DESC = 'desc',
+    ASC = 'asc'
+}
 
 
 export enum AppRoles {
@@ -37,6 +48,106 @@ export enum sessionStatus {
 }
 
 export enum currencies {
-    USD = 'usd',
-    EGP = 'egp'
+    EGP = "EGP",
+    DZD = "DZD",
+    BHD = "BHD",
+    IQD = "IQD",
+    JOD = "JOD",
+    KWD = "KWD",
+    TND = "TND",
+    AED = "AED",
+    MAD = "MAD",
+    LBP = "LBP",
+    SDG = "SDG",
+    SYP = "SYP",
+    OMR = "OMR",
+    QAR = "QAR",
+    SAR = "SAR",
+    YER = "YER",
+    ILS = "ILS"
+}
+
+
+
+export enum skills {
+    html = "html",
+    css = "css",
+    javascript = "javascript",
+    scss = "scss",
+    lass = "lass",
+    java = "java",
+    angular = "angular",
+    react = "react",
+    vue = "vue",
+    nextjs = "nextjs",
+    nuxtjs = "nuxtjs",
+    remix = "remix",
+    frontend = "front end",
+    backend = "back end",
+    fullstack = "full stack",
+    devops = "devops",
+    nodejs = "nodejs",
+    nestjs = "nestjs",
+    restfulapis = "restful apis",
+    graphql = "graphql",
+    cyperSecurity = "cyper security",
+    uiuxDesign = "ui/ux design",
+    typescript = "typescript",
+    python = "python",
+    rust = "rust",
+    swift = "swift",
+    iosDevelopement = "ios developement",
+    andriodDevelopment = "andriod development",
+    objectiveC = "objective-c",
+    kotlin = "kotlin",
+    reactNative = "react native",
+    flutter = "flutter",
+    dart = "dart",
+    django = "django",
+    cPlusPlus = "c++",
+    machineLearning = "machine learning",
+    dataScientest = "data scientest",
+    ai = "ai",
+    deepLearning = "deep learning",
+    automation = "automation",
+    testing = "testing",
+    unitTesting = "unit testing",
+    integrationTesting = "integration testing",
+    endToEndTesting = "end to end testing",
+    git = "git",
+    github = "github",
+    agaile = "agaile",
+    documentation = "documentation",
+    cvReview = "cv Review",
+    projectDeployment = "project deployment",
+    projectManagement = "project management",
+    businessDevelopment = "business development",
+    freelancing = "freelancing",
+    redux = "redux",
+    reduxToolkit = "redux toolkit",
+    webpack = "webpack",
+    vite = "vite",
+    tailwindCss = "tailwind-css",
+    bootstrap = "bootstrap",
+    laravel = "laravel",
+    php = "php",
+    shopifyDevelopment = "shopify development",
+    linux = "linux",
+    ubentu = "ubentu",
+    bugBounty = "bug bounty",
+    penetrationTesting = "penetration testing",
+    webDevelopment = "web development",
+    desktopDevelopment = "desktop development",
+    ionoc = "ionoc",
+    elctron = "elctron"
+}
+
+
+export enum languages {
+    English = "English",
+    Arabic = "Arabic",
+    French = "French",
+    Germany = "Germany",
+    russian = "russian",
+    Chinese = "Chinese"
 }

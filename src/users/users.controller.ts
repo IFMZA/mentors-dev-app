@@ -9,7 +9,7 @@ import reset_password_update_dto from './DTOs/reset.password.update';
 import verify_password_update_dto from 'src/forgot-password/DTOs/verify-password.update';
 import userUpdateDTO from './DTOs/user.update';
 import { Request, Response } from 'express';
-import { create_session_meeting, delete_session_meeting } from '../common/utils/googleMeetCreator'
+import mentor_filter_dto from './DTOs/mentor.filter';
 
 
 
@@ -88,6 +88,21 @@ export class UsersController {
         @Body() user_update_dto: userUpdateDTO,
     ) {
         return await this._usersService.updateUser(request.headers.authorization.replace('Bearer ', ''), user_update_dto)
+    }
+
+    @Get('/getMentorById/:mentor_id')
+    async getMentorById(
+        @Param('mentor_id') mentor_id: string
+    ) {
+        return await this._usersService.getMentorById(mentor_id);
+    }
+
+    @Get('/getMentors')
+    async getMentors(
+        @Query() mentor_filter: mentor_filter_dto
+    ) {
+        console.log(mentor_filter)
+        return await this._usersService.getMentorsByFilterSort(mentor_filter);
     }
 
 }

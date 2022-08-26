@@ -6,7 +6,7 @@ export const PaymentsSchema = new mongoose.Schema({
     paymentId: { type: String, unique: true, required: false },
     sessionId: { type: String, required: false },
     amount: { type: Number, required: false },
-    currency: { type: String, enum: [currencies.EGP, currencies.USD], required: false },
+    currency: { type: String, enum: Object.values(currencies), required: false },
     mentorId: { type: String, required: false },
     developerId: { type: String, required: false },
     balanceBefore: { type: Number, required: false },

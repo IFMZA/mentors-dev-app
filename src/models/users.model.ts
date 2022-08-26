@@ -12,13 +12,14 @@ export const UsersSchema = new mongoose.Schema({
     profileImage: { type: String, required: false },
     location: { type: String, required: false },
     website: { type: String, required: false },
-    preferredCurreny: { type: String, enum: [currencies.EGP, currencies.USD], required: false },
+    preferredCurreny: { type: String, enum: Object.values(currencies), required: false },
     languages: { type: [String], required: false },
     skills: { type: [String], required: false },
     bio: { type: String, required: false },
     experience: { type: String, required: false },
     currentCompany: { type: String, required: false },
     education: { type: String, required: false },
+    onlineStatus: { type: Boolean, default: true, required: false },
     doneClientsCount: { type: Number, default: 0, required: false },
     rate: { type: Number, default: 0, required: false },
     wallletBalance: { type: Number, default: 0, required: false },
@@ -41,11 +42,12 @@ export interface IUser {
     website: string;
     preferredCurreny: string;
     languages: string[];
-    skills: string;
+    skills: string[];
     bio: string;
     experience: string;
     currentCompany: string;
     education: string;
+    onlineStatus: boolean;
     doneClientsCount: number;
     rate: number;
     wallletBalance: number;
