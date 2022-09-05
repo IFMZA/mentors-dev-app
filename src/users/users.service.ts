@@ -303,7 +303,7 @@ export class UsersService {
         if (mentor_filter.country) { query["location.country"] = { $regex: new RegExp(mentor_filter.country.trim(), 'i') } }
         if (mentor_filter.language) { query["languages"] = { $in: [mentor_filter.language] } }
         if (mentor_filter.skill) { query["skills"] = { $in: [mentor_filter.skill] } }
-        if (mentor_filter.onlineStatus) { query["onlineStatus"] = { $regex: new RegExp(mentor_filter.onlineStatus.trim(), 'i') } }
+        if (mentor_filter.onlineStatus) { query["onlineStatus"] = mentor_filter.onlineStatus; }
 
         const found_users = await this._userModel.find(query, {}, { skip: _skip, limit: MENTORS_LIST_PAGE_SIZE }).sort(sortQuery);
         return found_users;
