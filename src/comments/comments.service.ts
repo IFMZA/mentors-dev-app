@@ -1,13 +1,15 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { COMMENT_MODEL_NAME, COMMENT_LIKE_MODEL_NAME, TOKEN_MODEL_NAME, COMMENTS_LIST_PAGE_SIZE, REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME } from 'src/common/constants';
+import { COMMENT_MODEL_NAME, COMMENT_LIKE_MODEL_NAME, TOKEN_MODEL_NAME, COMMENTS_LIST_PAGE_SIZE, REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
 
 import { IComment } from '../models/comments.model';
 import { ICommentLike } from '../models/commentsLikes.model';
 import { IReply } from '../models/replies.model';
 import { IReplyLike } from '../models/repliesLikes.model';
+import { IUser } from '../models/users.model';
+
 
 
 import { IToken } from '../models/auth/tokens.model';
@@ -27,6 +29,7 @@ export class CommentsService {
         @InjectModel(COMMENT_LIKE_MODEL_NAME) private _likeModel: Model<ICommentLike>,
         @InjectModel(REPLY_MODEL_NAME) private _replyModel: Model<IReply>,
         @InjectModel(REPLY_LIKE_MODEL_NAME) private _replyLikeModel: Model<IReplyLike>,
+        @InjectModel(USER_MODEL_NAME) private _userModel: Model<IUser>,
         @InjectModel(TOKEN_MODEL_NAME) private _tokenModel: Model<IToken>) { }
 
     async createComment(token: string, comment_insert_dto: commentInsertDTO) {
@@ -79,6 +82,22 @@ export class CommentsService {
             const related_replies = found_replies.filter(function(element) { return element.commentId == comment.commentId; })
             comment["replies"] = related_replies;
         });
+        for (let idx = 0; idx < found_comments.length; idx++) {
+            const commentItem = found_comments[idx];
+            const found_user = await this.findUser({ userId: commentItem.userId });
+            if (found_user) {
+                commentItem['user'] = {
+                    name: found_user.name,
+                    image: found_user.profileImage
+                };
+            }
+            else {
+                commentItem['user'] = {
+                    name: 'anonymous',
+                    image: ''
+                };
+            }
+        }
         return found_comments;
     }
 
@@ -89,10 +108,49 @@ export class CommentsService {
         // get user id from token
         const foundToken = await this._tokenModel.findOne({ token: token });
         userId = foundToken.userId;
+        const exist_previous = await this.findOne({ commentId: commentId, userId: userId });
+        if (exist_previous) {
+            throw new ConflictException({ message: 'already liked' });
+        }
+
 
         await this._likeModel.create({ commentId: commentId, likeId: generateUUID(), userId: userId });
         return await this._commentModel.findOneAndUpdate({
             commentId: commentId
         }, { $inc: { likeCount: 1 } }, { upsert: false, new: true });
+    }
+
+
+    async deleteLikeComment(token: string, commentId: string) {
+        console.log('delete like comment');
+        let userId = "";
+        // get user id from token
+        const foundToken = await this._tokenModel.findOne({ token: token });
+        userId = foundToken.userId;
+
+        const delete_result = await this._likeModel.findOneAndDelete({ commentId: commentId, userId: userId });
+        if (delete_result) {
+            return await this._commentModel.findOneAndUpdate({
+                commentId: commentId
+            }, { $inc: { likeCount: -1 } }, { upsert: false, new: true });
+        }
+        return delete_result;
+    }
+
+
+    async findUser(query) {
+        const user = await this._userModel.findOne(query);
+        if (user) {
+            return user.toJSON()
+        }
+        return user;
+    }
+
+    async findOne(query) {
+        const user = await this._likeModel.findOne(query);
+        if (user) {
+            return user.toJSON()
+        }
+        return user;
     }
 }

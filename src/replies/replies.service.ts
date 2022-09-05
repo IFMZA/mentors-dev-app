@@ -1,11 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
+import { REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
 
 import { IReply } from '../models/replies.model';
 import { IReplyLike } from '../models/repliesLikes.model';
+import { IUser } from '../models/users.model';
+
 
 
 import { IToken } from '../models/auth/tokens.model';
@@ -23,6 +25,7 @@ import { generateUUID } from 'src/common/utils/generalUtils';
 export class RepliesService {
     constructor(@InjectModel(REPLY_MODEL_NAME) private _replyModel: Model<IReply>,
         @InjectModel(REPLY_LIKE_MODEL_NAME) private _replyLikeModel: Model<IReplyLike>,
+        @InjectModel(USER_MODEL_NAME) private _userModel: Model<IUser>,
         @InjectModel(TOKEN_MODEL_NAME) private _tokenModel: Model<IToken>) { }
 
     async createReply(token: string, reply_insert_dto: replyInsertDTO) {
@@ -66,6 +69,23 @@ export class RepliesService {
         const found_replies = await this._replyModel.find({
             commentId: commentId
         }).sort({ createdAt: -1 });
+
+        for (let idx = 0; idx < found_replies.length; idx++) {
+            const replyItem = found_replies[idx];
+            const found_user = await this.findUser({ userId: replyItem.userId });
+            if (found_user) {
+                replyItem['user'] = {
+                    name: found_user.name,
+                    image: found_user.profileImage
+                };
+            }
+            else {
+                replyItem['user'] = {
+                    name: 'anonymous',
+                    image: ''
+                };
+            }
+        }
         return found_replies;
     }
 
@@ -77,9 +97,46 @@ export class RepliesService {
         const foundToken = await this._tokenModel.findOne({ token: token });
         userId = foundToken.userId;
 
+        const exist_previous = await this.findOne({ replyId: replyId, commentId: commentId, userId: userId });
+        if (exist_previous) {
+            throw new ConflictException({ message: 'already liked' });
+        }
+
         await this._replyLikeModel.create({ replyId: replyId, commentId: commentId, likeId: generateUUID(), userId: userId });
         return await this._replyModel.findOneAndUpdate({
             replyId: replyId
         }, { $inc: { likeCount: 1 } }, { upsert: false, new: true });
+    }
+
+    async deleteReplyLike(token: string, replyId: string) {
+        console.log('delete reply');
+        let userId = "";
+        // get user id from token
+        const foundToken = await this._tokenModel.findOne({ token: token });
+        userId = foundToken.userId;
+
+        const delete_result = await this._replyLikeModel.findOneAndDelete({ replyId: replyId, userId: userId });
+        if (delete_result) {
+            return await this._replyModel.findOneAndUpdate({
+                replyId: replyId
+            }, { $inc: { likeCount: -1 } }, { upsert: false, new: true });
+        }
+        return delete_result;
+    }
+
+    async findUser(query) {
+        const user = await this._userModel.findOne(query);
+        if (user) {
+            return user.toJSON()
+        }
+        return user;
+    }
+
+    async findOne(query) {
+        const user = await this._replyLikeModel.findOne(query);
+        if (user) {
+            return user.toJSON()
+        }
+        return user;
     }
 }

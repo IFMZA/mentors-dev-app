@@ -1,15 +1,17 @@
 /* eslint-disable prettier/prettier */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined } from 'class-validator';
+import { IsDefined, IsNotEmpty } from 'class-validator';
 
 class sessionInsertDTO {
     @ApiProperty()
     @IsDefined()
+    @IsNotEmpty()
     mentorId: string;
 
     @ApiProperty()
     @IsDefined()
+    @IsNotEmpty()
     packageId: string;
 
     @ApiProperty()

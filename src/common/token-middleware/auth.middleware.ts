@@ -11,6 +11,8 @@ const exculded_routes = [
     '/verify',
     '/getMentors',
     '/getMentorById',
+    '/getComments',
+    '/getReplies',
     '/test'
 ];
 

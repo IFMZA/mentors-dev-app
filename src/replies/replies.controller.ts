@@ -54,5 +54,13 @@ export class RepliesController {
     ) {
         return await this._RepliesService.likeReply(request.headers.authorization.replace('Bearer ', ''), replyId, commentId);
     }
+
+    @Delete('/removeLike/:replyId')
+    async deleteReplyLike(
+        @Req() request: Request,
+        @Param('replyId') replyId: string
+    ) {
+        return await this._RepliesService.deleteReplyLike(request.headers.authorization.replace('Bearer ', ''), replyId)
+    }
 }
 

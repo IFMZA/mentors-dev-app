@@ -53,5 +53,13 @@ export class CommentsController {
     ) {
         return await this._CommentsService.likeComment(request.headers.authorization.replace('Bearer ', ''), commentId);
     }
+
+    @Delete('/removeLike/:commentId')
+    async deleteCommentLike(
+        @Req() request: Request,
+        @Param('commentId') commentId: string
+    ) {
+        return await this._CommentsService.deleteLikeComment(request.headers.authorization.replace('Bearer ', ''), commentId)
+    }
 }
 

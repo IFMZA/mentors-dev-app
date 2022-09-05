@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
+import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import reviewInsertDTO from './DTOs/review.insert';
 import reviewUpdateDTO from './DTOs/review.update';
@@ -42,6 +43,24 @@ export class ReviewsController {
         @Param('pageId') pageId: number,
     ) {
         return await this._ReviewsService.findReviews(pageId);
+    }
+
+
+    @Get('/getSelfReviews/:pageId')
+    async getSelfReviews(
+        @Req() request: Request,
+        @Param('pageId') pageId: number,
+    ) {
+        return await this._ReviewsService.findSelfReviews(request.headers.authorization.replace('Bearer ', ''), pageId);
+    }
+
+
+    @Get('/getReviews/:mentorId&:pageId')
+    async getReviewsByMentorId(
+        @Param('pageId') pageId: number,
+        @Param('mentorId') mentorId: string,
+    ) {
+        return await this._ReviewsService.findReviewsByMentorId(mentorId, pageId);
     }
 }
 

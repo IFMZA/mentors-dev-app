@@ -1,16 +1,22 @@
 /* eslint-disable prettier/prettier */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsOptional } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsOptional } from 'class-validator';
 
 class reviewInsertDTO {
     @ApiProperty()
     @IsDefined()
+    @IsNotEmpty()
     mentorId: string;
 
     @ApiProperty()
     @IsDefined()
+    @IsNotEmpty()
     developerId: string;
+
+    @ApiProperty()
+    @IsOptional()
+    sessionId: string;
 
     @ApiProperty()
     @IsOptional()

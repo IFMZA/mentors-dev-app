@@ -10,9 +10,6 @@ class mentor_filter_dto {
     @IsOptional()
     searchKeyword: string;
 
-    @ApiProperty({ required: false })
-    @IsOptional()
-    name: string;
 
     @ApiProperty({ required: false })
     @IsOptional()

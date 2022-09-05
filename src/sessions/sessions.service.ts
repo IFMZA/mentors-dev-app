@@ -2,10 +2,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { MENTOR_PACKAGE_MODEL_NAME, PackageTypes, sessionStatus, SESSION_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
+import { MENTOR_PACKAGE_MODEL_NAME, PackageTypes, sessionStatus, SESSION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
 import { create_session_meeting, delete_session_meeting } from '../common/utils/googleMeetCreator'
 import { ISession } from '../models/sessions.model';
 import { IToken } from '../models/auth/tokens.model';
+
 import { IMentorPackage } from '../models/mentorPackages.model';
 import sessionInsertDTO from './DTOs/session.insert';
 import { generateUUID } from 'src/common/utils/generalUtils';
@@ -117,6 +118,20 @@ export class SessionsService {
         return await this._sessionModel.find({ developerId: developer_id });
     }
 
+    async getSelfSessions(token: string) {
+        const query = {};
+        let userId = "";
+        // get user id from token
+        const foundToken = await this._tokenModel.findOne({ token: token });
+        userId = foundToken.userId;
+
+        query["$or"] = [
+            { mentorId: userId },
+            { developerId: userId }
+        ];
+        return await this._sessionModel.find(query).sort({ createdAt: -1 });
+    }
+
 
     async getPackageDuration(packageId: string): Promise<number> {
         console.log('getPackageById');
@@ -138,4 +153,5 @@ export class SessionsService {
         }
         return null;
     }
+
 }

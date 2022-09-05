@@ -51,5 +51,12 @@ export class SessionsController {
     ) {
         return await this._sessionsService.findByDeveloperId(developerId);
     }
+
+    @Get('/getSelfSessions')
+    async getSelfSessions(
+        @Req() request: Request
+    ) {
+        return await this._sessionsService.getSelfSessions(request.headers.authorization.replace('Bearer ', ''));
+    }
 }
 
