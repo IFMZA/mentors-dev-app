@@ -72,6 +72,7 @@ export class CommentsService {
 
 
     async findComments(pageId: number) {
+        const comments_list = [];
         const _skip = COMMENTS_LIST_PAGE_SIZE * pageId;
         const found_comments = await this._commentModel.find({}, {}, { skip: _skip, limit: COMMENTS_LIST_PAGE_SIZE }).sort({ createdAt: -1 });
         const unique_comment_ids = [...new Set(found_comments.map(item => item.commentId))];
@@ -79,26 +80,36 @@ export class CommentsService {
             commentId: { $in: unique_comment_ids }
         }, {}, { skip: _skip, limit: COMMENTS_LIST_PAGE_SIZE }).sort({ createdAt: -1 });
         found_comments.forEach(comment => {
+            let _comment: any = {};
+            _comment = JSON.parse(JSON.stringify(comment));
             const related_replies = found_replies.filter(function(element) { return element.commentId == comment.commentId; })
-            comment["replies"] = related_replies;
+            _comment.replies = related_replies;
+            comments_list.push(_comment);
+            // comment["replies"] = related_replies;
         });
-        for (let idx = 0; idx < found_comments.length; idx++) {
-            const commentItem = found_comments[idx];
+        for (let idx = 0; idx < comments_list.length; idx++) {
+            // eslint-disable-next-line prefer-const
+            let commentItem = comments_list[idx];
+            console.log(commentItem);
             const found_user = await this.findUser({ userId: commentItem.userId });
+            console.log(found_user);
             if (found_user) {
-                commentItem['user'] = {
+                commentItem.user = {
+                    userId: found_user.userId,
                     name: found_user.name,
                     image: found_user.profileImage
                 };
             }
             else {
-                commentItem['user'] = {
+                commentItem.user = {
+                    userId: '',
                     name: 'anonymous',
                     image: ''
                 };
             }
+            console.log(commentItem);
         }
-        return found_comments;
+        return comments_list;
     }
 
 

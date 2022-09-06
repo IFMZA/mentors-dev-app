@@ -66,27 +66,34 @@ export class RepliesService {
 
 
     async findReplies(commentId: string) {
+        const replies_list = [];
         const found_replies = await this._replyModel.find({
             commentId: commentId
         }).sort({ createdAt: -1 });
 
         for (let idx = 0; idx < found_replies.length; idx++) {
             const replyItem = found_replies[idx];
+            let _reply: any = {};
+            _reply = JSON.parse(JSON.stringify(replyItem));
+
             const found_user = await this.findUser({ userId: replyItem.userId });
             if (found_user) {
-                replyItem['user'] = {
+                _reply.user = {
+                    userId: found_user.userId,
                     name: found_user.name,
                     image: found_user.profileImage
                 };
             }
             else {
-                replyItem['user'] = {
+                _reply.user = {
+                    userId: '',
                     name: 'anonymous',
                     image: ''
                 };
             }
+            replies_list.push(_reply);
         }
-        return found_replies;
+        return replies_list;
     }
 
 

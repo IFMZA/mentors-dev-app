@@ -8,7 +8,7 @@ import { Swagger } from './common/utils/swagger';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
-    const port = process.env.PORT || 3400
+    const port = process.env.PORT || 1029
     app.useGlobalPipes(new DefaultValidationPipe());
     app.useGlobalFilters(new AllExceptionsFilter());
     app.enableShutdownHooks();
