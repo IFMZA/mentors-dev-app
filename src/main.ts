@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/all-exceptions-filters';
 import { DefaultValidationPipe } from './common/default-validation-pipe';
@@ -13,6 +14,10 @@ async function bootstrap() {
     app.useGlobalFilters(new AllExceptionsFilter());
     app.enableShutdownHooks();
     // app.setGlobalPrefix('api/v1');
+    app.useStaticAssets(join(__dirname, '..', 'files'), {
+        index: false,
+        prefix: '/files',
+    });
 
     Swagger.setup(app)
 
