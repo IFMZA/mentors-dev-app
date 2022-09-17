@@ -79,35 +79,40 @@ export class CommentsService {
         const found_replies = await this._replyModel.find({
             commentId: { $in: unique_comment_ids }
         }, {}, { skip: _skip, limit: COMMENTS_LIST_PAGE_SIZE }).sort({ createdAt: -1 });
+
+
         found_comments.forEach(comment => {
             let _comment: any = {};
             _comment = JSON.parse(JSON.stringify(comment));
             const related_replies = found_replies.filter(function(element) { return element.commentId == comment.commentId; })
             _comment.replies = related_replies;
             comments_list.push(_comment);
-            // comment["replies"] = related_replies;
         });
+
         for (let idx = 0; idx < comments_list.length; idx++) {
             // eslint-disable-next-line prefer-const
             let commentItem = comments_list[idx];
-            console.log(commentItem);
+            //Get User Details For Comment
             const found_user = await this.findUser({ userId: commentItem.userId });
-            console.log(found_user);
-            if (found_user) {
-                commentItem.user = {
-                    userId: found_user.userId,
-                    name: found_user.name,
-                    image: found_user.profileImage
-                };
+            if (found_user)
+                commentItem.user = { userId: found_user.userId, name: found_user.name, image: found_user.profileImage };
+            else
+                commentItem.user = { userId: '', name: 'anonymous', image: '' };
+
+            //Get User Details For Reply
+            const new_replies = [];
+            for (let idx_ = 0; idx_ < commentItem.replies.length; idx_++) {
+                const reply_item = commentItem.replies[idx_];
+                let _reply: any = {};
+                _reply = JSON.parse(JSON.stringify(reply_item));
+                const found_user_reply = await this.findUser({ userId: commentItem.userId });
+                if (found_user_reply)
+                    _reply.user = { userId: found_user_reply.userId, name: found_user_reply.name, image: found_user_reply.profileImage };
+                else
+                    _reply.user = { userId: '', name: 'anonymous', image: '' };
+                new_replies.push(_reply);
             }
-            else {
-                commentItem.user = {
-                    userId: '',
-                    name: 'anonymous',
-                    image: ''
-                };
-            }
-            console.log(commentItem);
+            commentItem.replies = new_replies;
         }
         return comments_list;
     }

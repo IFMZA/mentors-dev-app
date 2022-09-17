@@ -65,6 +65,10 @@ class userUpdateDTO {
     @ApiProperty({ required: false })
     @IsOptional()
     onlineStatus: boolean;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    profileImage: string;
 }
 
 export default userUpdateDTO;

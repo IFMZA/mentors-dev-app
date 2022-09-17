@@ -16,12 +16,14 @@ import { SessionsModule } from './sessions/sessions.module';
 import { CommentsModule } from './comments/comments.module';
 import { RepliesModule } from './replies/replies.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ChatMessagesModule } from './chatMessages/chatMessages.module';
 
 @Module({
     imports: [
         MongooseModule.forRoot(dbConnection.getConnection().connection, { dbName: dbConnection.getConnection().dbName }),
         UsersModule, AuthModule, ForgotPasswordModule, AuthMiddlewareModule, MentorPackagesModule, MentorAvailableSlotsModule,
-        SessionsModule, CommentsModule, RepliesModule, ReviewsModule
+        SessionsModule, CommentsModule, RepliesModule, ReviewsModule, NotificationsModule, ChatMessagesModule
     ],
     controllers: [AppController],
     providers: [AppService],

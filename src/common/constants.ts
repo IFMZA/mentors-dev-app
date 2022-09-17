@@ -6,6 +6,10 @@ export const FORGOT_PASSWORD_MODEL_NAME = "forgotPassword";
 export const MENTOR_PACKAGE_MODEL_NAME = "mentor-package";
 export const MENTOR_AVAILABLE_SLOT_MODEL_NAME = "mentor-slots";
 export const SESSION_MODEL_NAME = "mentor-session";
+export const NOTIFICATION_MODEL_NAME = "notification";
+export const MESSAGE_MODEL_NAME = "messages";
+
+
 
 export const COMMENT_MODEL_NAME = "comment";
 export const COMMENT_LIKE_MODEL_NAME = "comment-like";
@@ -58,6 +62,25 @@ export enum sessionStatus {
     UPCOMING = "upcoming",
     CANCELED = "canceled"
 }
+
+
+export enum notificationType {
+    SESSION_RESERVATION = "session_reservation",
+    NEW_REVIEW = "new_review"
+}
+
+export const notificationTemplates = [
+    {
+        type: "session_reservation",
+        title: "new session reservation",
+        body: "new session reservation from {name}"
+    }, {
+        type: "new_review",
+        title: "new review",
+        body: "new review from {name}"
+    }
+];
+
 
 export enum currencies {
     EGP = "EGP",

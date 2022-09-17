@@ -13,6 +13,9 @@ const exculded_routes = [
     '/getMentorById',
     '/getComments',
     '/getReplies',
+    'getPackagesbyMentorId',
+    'getAvalibleSlotsByMentorId',
+    'getReviewsByMentorId',
     '/test'
 ];
 

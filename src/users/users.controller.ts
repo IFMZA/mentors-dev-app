@@ -2,14 +2,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-var */
 
-import { Body, Controller, Get, Param, Post, Put, Query, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import reset_password_update_dto from './DTOs/reset.password.update';
 import verify_password_update_dto from 'src/forgot-password/DTOs/verify-password.update';
 import userUpdateDTO from './DTOs/user.update';
 import { Request, Response } from 'express';
 import mentor_filter_dto from './DTOs/mentor.filter';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path/posix';
 
 
 
@@ -42,7 +45,7 @@ export class UsersController {
         var _startdate = new Date("2022-08-29 22:00");
         var _enddate = new Date("2022-08-29 23:00");
 
-        if(_dateNewStart >= _startdate && _dateNewStart <= _enddate){
+        if (_dateNewStart >= _startdate && _dateNewStart <= _enddate) {
             return "Not valid"
         }
 
@@ -84,6 +87,27 @@ export class UsersController {
         // return _date;
     }
 
+
+    // @Put('file')
+    // @UseInterceptors(FileInterceptor('file', {
+    //     storage: diskStorage({
+    //         destination: './files',
+    //         filename: (req, file, callback) => {
+    //             const unique_suff = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    //             const file_name = unique_suff + extname(file.originalname);
+    //             callback(null, file_name);
+    //         }
+    //     })
+    // }))
+    // async uploadFile(
+    //     @UploadedFile() file: Express.Multer.File,
+    //     @Body() user_update_dto: userUpdateDTO
+    // ) {
+    //     console.log('file', file);
+    //     console.log(user_update_dto)
+    //     return 'file Upload'
+    // }
+
     @Get('/verify/:email&:verify_code')
     async verifyCode(
         @Param('email') email: string,
@@ -97,11 +121,25 @@ export class UsersController {
         return res.redirect(`http://localhost:3000/new/${role}`);
     }
 
+    @ApiConsumes('multipart/form-data')
     @Put('/update')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './files',
+            filename: (req, file, callback) => {
+                const unique_suff = Date.now() + "-" + Math.round(Math.random() * 1e9);
+                const file_name = unique_suff + extname(file.originalname);
+                callback(null, file_name);
+            }
+        })
+    }))
     async updateUser(
         @Req() request: Request,
         @Body() user_update_dto: userUpdateDTO,
+        @UploadedFile() file: Express.Multer.File
     ) {
+        console.log(file)
+        if (file) { user_update_dto.profileImage = file.path }
         return await this._usersService.updateUser(request.headers.authorization.replace('Bearer ', ''), user_update_dto)
     }
 
