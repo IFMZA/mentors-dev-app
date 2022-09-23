@@ -40,9 +40,11 @@ export class ReviewsController {
 
     @Get('/getReviews/:pageId')
     async getReviews(
+        @Req() req: Request,
         @Param('pageId') pageId: number,
     ) {
-        return await this._ReviewsService.findReviews(pageId);
+        const base_url = `${req.protocol}://${req.get('Host')}/`;
+        return await this._ReviewsService.findReviews(base_url, pageId);
     }
 
 

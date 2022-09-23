@@ -2,7 +2,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
+import { REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME, AuthMethods } from 'src/common/constants';
 
 import { IReply } from '../models/replies.model';
 import { IReplyLike } from '../models/repliesLikes.model';
@@ -65,7 +65,7 @@ export class RepliesService {
     }
 
 
-    async findReplies(commentId: string) {
+    async findReplies(base_url: string, commentId: string) {
         const replies_list = [];
         const found_replies = await this._replyModel.find({
             commentId: commentId
@@ -81,7 +81,7 @@ export class RepliesService {
                 _reply.user = {
                     userId: found_user.userId,
                     name: found_user.name,
-                    image: found_user.profileImage
+                    image: found_user.authMethod == AuthMethods.LOCAL ? base_url + found_user.profileImage : found_user.profileImage
                 };
             }
             else {

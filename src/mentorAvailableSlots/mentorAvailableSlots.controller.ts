@@ -68,8 +68,10 @@ export class MentorAvailableSlotsController {
 
     @Get('/getAvailableSlots/:mentorId')
     async getAvailableSlots(
+        @Req() req: Request,
         @Param('mentorId') mentorId: string,
     ) {
+        console.log(`${req.protocol}://${req.get('Host')}`);
         return await this._SlotsService.findAvailableSlotsByMentorId(mentorId);
     }
 }

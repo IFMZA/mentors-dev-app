@@ -2,7 +2,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { COMMENT_MODEL_NAME, COMMENT_LIKE_MODEL_NAME, TOKEN_MODEL_NAME, COMMENTS_LIST_PAGE_SIZE, REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
+import { COMMENT_MODEL_NAME, COMMENT_LIKE_MODEL_NAME, TOKEN_MODEL_NAME, COMMENTS_LIST_PAGE_SIZE, REPLY_MODEL_NAME, REPLY_LIKE_MODEL_NAME, USER_MODEL_NAME, AppRoles, AuthMethods } from 'src/common/constants';
 
 import { IComment } from '../models/comments.model';
 import { ICommentLike } from '../models/commentsLikes.model';
@@ -71,7 +71,7 @@ export class CommentsService {
     }
 
 
-    async findComments(pageId: number) {
+    async findComments(base_url: string, pageId: number) {
         const comments_list = [];
         const _skip = COMMENTS_LIST_PAGE_SIZE * pageId;
         const found_comments = await this._commentModel.find({}, {}, { skip: _skip, limit: COMMENTS_LIST_PAGE_SIZE }).sort({ createdAt: -1 });
@@ -95,7 +95,7 @@ export class CommentsService {
             //Get User Details For Comment
             const found_user = await this.findUser({ userId: commentItem.userId });
             if (found_user)
-                commentItem.user = { userId: found_user.userId, name: found_user.name, image: found_user.profileImage };
+                commentItem.user = { userId: found_user.userId, name: found_user.name, image: found_user.authMethod == AuthMethods.LOCAL ? base_url + found_user.profileImage : found_user.profileImage };
             else
                 commentItem.user = { userId: '', name: 'anonymous', image: '' };
 
@@ -107,7 +107,7 @@ export class CommentsService {
                 _reply = JSON.parse(JSON.stringify(reply_item));
                 const found_user_reply = await this.findUser({ userId: commentItem.userId });
                 if (found_user_reply)
-                    _reply.user = { userId: found_user_reply.userId, name: found_user_reply.name, image: found_user_reply.profileImage };
+                    _reply.user = { userId: found_user_reply.userId, name: found_user_reply.name, image: found_user_reply.authMethod == AuthMethods.LOCAL ? base_url + found_user_reply.profileImage : found_user_reply.profileImage };
                 else
                     _reply.user = { userId: '', name: 'anonymous', image: '' };
                 new_replies.push(_reply);

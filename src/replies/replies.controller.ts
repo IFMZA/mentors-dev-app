@@ -41,9 +41,11 @@ export class RepliesController {
 
     @Get('/getReplies/:commentId')
     async getReplies(
+        @Req() req: Request,
         @Param('commentId') commentId: string,
     ) {
-        return await this._RepliesService.findReplies(commentId);
+        const base_url = `${req.protocol}://${req.get('Host')}/`;
+        return await this._RepliesService.findReplies(base_url, commentId);
     }
 
     @Post('/like/:replyId&:commentId')

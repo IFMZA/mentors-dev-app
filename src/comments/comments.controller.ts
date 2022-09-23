@@ -41,9 +41,11 @@ export class CommentsController {
 
     @Get('/getComments/:pageId')
     async getComments(
+        @Req() req: Request,
         @Param('pageId') pageId: number,
     ) {
-        return await this._CommentsService.findComments(pageId);
+        const base_url = `${req.protocol}://${req.get('Host')}/`;
+        return await this._CommentsService.findComments(base_url, pageId);
     }
 
     @Post('/like/:commentId')

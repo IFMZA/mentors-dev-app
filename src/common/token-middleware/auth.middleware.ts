@@ -13,8 +13,8 @@ const exculded_routes = [
     '/getMentorById',
     '/getComments',
     '/getReplies',
-    'getPackagesbyMentorId',
-    'getAvalibleSlotsByMentorId',
+    'getPackages',
+    'getAvailableSlots',
     'getReviewsByMentorId',
     '/test'
 ];
