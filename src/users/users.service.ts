@@ -265,7 +265,7 @@ export class UsersService {
         return found_user;
     }
 
-    async getMentorsByFilterSort(mentor_filter: mentor_filter_dto) {
+    async getMentorsByFilterSort(base_url: string, mentor_filter: mentor_filter_dto) {
         const _skip = MENTORS_LIST_PAGE_SIZE * mentor_filter.pageId;
 
         console.log(mentor_filter);
@@ -306,6 +306,9 @@ export class UsersService {
         if (mentor_filter.onlineStatus) { query["onlineStatus"] = mentor_filter.onlineStatus; }
 
         const found_users = await this._userModel.find(query, {}, { skip: _skip, limit: MENTORS_LIST_PAGE_SIZE }).sort(sortQuery);
+        found_users.forEach(element => {
+            element.profileImage = element.authMethod == AuthMethods.LOCAL && element.profileImage ? base_url + element.profileImage : element.profileImage
+        });
         return found_users;
     }
 }

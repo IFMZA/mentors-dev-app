@@ -38,16 +38,46 @@ export class UsersController {
     async test(
     ) {
 
-        var _dateNewStart = new Date("2022-08-29 10:01");
-        // var _dateNewEnd = new Date("2022-08-29 09:00");
 
 
-        var _startdate = new Date("2022-08-29 22:00");
-        var _enddate = new Date("2022-08-29 23:00");
+        const availability = require('timeslot-availability');
 
-        if (_dateNewStart >= _startdate && _dateNewStart <= _enddate) {
-            return "Not valid"
-        }
+        const start = new Date('2019-08-08T08:00:00.000Z');
+        const end = new Date('2019-08-08T16:00:00.000Z');
+        const timespan = 30 * 60; // 30 minutes
+
+        const siestas = [
+            {
+                start: '2019-08-08T09:00:00.000Z',
+                end: '2019-08-08T12:00:00.000Z',
+            },
+            {
+                start: '2019-08-08T10:00:00.000Z',
+                end: '2019-08-08T12:00:00.000Z',
+            },
+            {
+                start: '2019-08-08T13:00:00.000Z',
+                end: '2019-08-08T14:00:00.000Z',
+            },
+        ];
+
+        const bookable = availability(start, end, timespan, siestas);
+
+        console.log(bookable);
+
+
+
+
+        // var _dateNewStart = new Date("2022-08-29 10:01");
+        // // var _dateNewEnd = new Date("2022-08-29 09:00");
+
+
+        // var _startdate = new Date("2022-08-29 22:00");
+        // var _enddate = new Date("2022-08-29 23:00");
+
+        // if (_dateNewStart >= _startdate && _dateNewStart <= _enddate) {
+        //     return "Not valid"
+        // }
 
 
         return "valid"
@@ -152,10 +182,12 @@ export class UsersController {
 
     @Get('/getMentors')
     async getMentors(
+        @Req() req: Request,
         @Query() mentor_filter: mentor_filter_dto
     ) {
         console.log(mentor_filter)
-        return await this._usersService.getMentorsByFilterSort(mentor_filter);
+        const base_url = `${req.protocol}://${req.get('Host')}/`;
+        return await this._usersService.getMentorsByFilterSort(base_url, mentor_filter);
     }
 
 }

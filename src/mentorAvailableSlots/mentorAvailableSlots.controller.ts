@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req } from '@nestjs/common';
 import { MentorAvailableSlotsService } from './mentorAvailableSlots.service';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import slotInsertDTO from './DTOs/mentorAvailableSlots.insert';
 import slotUpdateDTO from './DTOs/mentorAvailableSlots.update';
 import slotSaveManyDTO from './DTOs/mentorAvailableSlots.many';
+import freeSlotGetDTO from './DTOs/freeSlots.get';
 
 
 
@@ -73,6 +74,19 @@ export class MentorAvailableSlotsController {
     ) {
         console.log(`${req.protocol}://${req.get('Host')}`);
         return await this._SlotsService.findAvailableSlotsByMentorId(mentorId);
+    }
+
+
+    // @ApiQuery({type: freeSlotGetDTO})
+    @Get('/getFreeSlots')
+    async getFreeSlots(
+        @Req() request: Request,
+        @Query() free_slot_options: freeSlotGetDTO
+    ) {
+        // const mentor_id = "ff5146c3-46ec-4987-b0ce-46b92c231417";
+        // const package_id = "b284dd5f-f715-4032-8ddf-683e897af899";
+        // const time_zone = "Africa/Cairo";
+        return await this._SlotsService.findFreeSlots(free_slot_options.mentor_id, free_slot_options.package_id, free_slot_options.time_zone)
     }
 }
 

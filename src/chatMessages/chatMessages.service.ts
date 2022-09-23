@@ -60,6 +60,7 @@ export class ChatMessagesService {
         // get user id from token
         const foundToken = await this._tokenModel.findOne({ token: token });
         userId = foundToken.userId;
+        console.log(userId);
 
         const query = {};
         query["$or"] = [

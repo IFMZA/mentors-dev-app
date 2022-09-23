@@ -1,10 +1,14 @@
 /* eslint-disable prettier/prettier */
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { MENTOR_AVAILABLE_SLOT_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
+import { MENTOR_AVAILABLE_SLOT_MODEL_NAME, MENTOR_PACKAGE_MODEL_NAME, PackageTypes, sessionStatus, SESSION_MODEL_NAME, TOKEN_MODEL_NAME } from 'src/common/constants';
 
 import { IMentorAvailableSlot } from '../models/mentorAvailableSlots.model';
+import { ISession } from '../models/sessions.model';
+import { IMentorPackage } from '../models/mentorPackages.model';
+
+
 import { IToken } from '../models/auth/tokens.model';
 import { generateUUID } from 'src/common/utils/generalUtils';
 import slotInsertDTO from './DTOs/mentorAvailableSlots.insert';
@@ -20,6 +24,8 @@ import { OpTypes } from './DTOs/saveMany.operation.types';
 @Injectable()
 export class MentorAvailableSlotsService {
     constructor(@InjectModel(MENTOR_AVAILABLE_SLOT_MODEL_NAME) private _slotModel: Model<IMentorAvailableSlot>,
+        @InjectModel(SESSION_MODEL_NAME) private _sessionModel: Model<ISession>,
+        @InjectModel(MENTOR_PACKAGE_MODEL_NAME) private _packageModel: Model<IMentorPackage>,
         @InjectModel(TOKEN_MODEL_NAME) private _tokenModel: Model<IToken>) { }
 
     async createSlot(token: string, slot_insert_dto: slotInsertDTO) {
@@ -221,5 +227,67 @@ export class MentorAvailableSlotsService {
             return slt.toJSON().mentorId
         }
         return null;
+    }
+
+
+
+    async findFreeSlots(mentor_id: string, package_id: string, time_zone: string) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const availability = require('timeslot-availability');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const moment = require('moment-timezone');
+        const free_slots = [];
+        let package_time_duration = 15;
+
+
+        //Get Package details
+        const found_package = await this._packageModel.findOne({ packageId: package_id });
+        if (!found_package) {
+            throw new NotFoundException({ message: 'package not found' });
+        }
+        if (found_package.packageType == PackageTypes.MINUTES_30) {
+            package_time_duration = 30;
+        }
+        else if (found_package.packageType == PackageTypes.MINUTES_15) {
+            package_time_duration = 15;
+        }
+        else if (found_package.packageType == PackageTypes.HOURS_1) {
+            package_time_duration = 60;
+        }
+        else {
+            throw new NotFoundException({ message: 'package type not found' });
+        }
+
+        // get busy slots from sessions
+        const busySlots = await this._sessionModel.find({ mentorId: mentor_id, status: sessionStatus.UPCOMING });
+        const reserved_slots = [];
+        for (let idx = 0; idx < busySlots.length; idx++) {
+            const slot_busy = busySlots[idx];
+            const startObj = moment.tz(slot_busy.startTime.toISOString(), time_zone).format();
+            const endObj = moment.tz(slot_busy.endTime.toISOString(), time_zone).format();
+            reserved_slots.push(
+                { start: startObj, end: endObj }
+            );
+        }
+
+
+
+        const available_slots = await this.findAvailableSlotsByMentorId(mentor_id);
+        for (let index = 0; index < available_slots.length; index++) {
+            const element = available_slots[index];
+            const date_segments = element.availableDate.toISOString().split('T');
+            const start = moment.tz(new Date(date_segments[0] + 'T' + element.fromTime).toISOString(), time_zone).format()
+            const end = moment.tz(new Date(date_segments[0] + 'T' + element.ToTime).toISOString(), time_zone).format()
+            const timespan = package_time_duration * 60;
+
+            const bookable = availability(start, end, timespan, reserved_slots);
+            bookable.forEach(bokkable_element => {
+                bokkable_element.start = moment.tz(bokkable_element.start, time_zone).format();
+                bokkable_element.end = moment.tz(bokkable_element.end, time_zone).format();
+                if (free_slots.filter(e => e.start === bokkable_element.start && e.end === bokkable_element.end).length == 0)
+                    free_slots.push(bokkable_element);
+            });
+        }
+        return free_slots;
     }
 }
