@@ -147,6 +147,7 @@ export class UsersService {
         };
 
         if (!await this.findOne({ "authCredentials.id": github_user.id })) {
+            console.log('not-found')
             user_insert['userId'] = generateUUID();
             user_insert['role'] = role;
         }

@@ -131,7 +131,7 @@ export class AuthService {
     private async getGitHubUserData(access_token: string) {
         let data = null;
         try {
-            const res2 = await axios.get(`https://api.github.com/users/${'user_name'}`);
+            // const res2 = await axios.get(`https://api.github.com/users/${'user_name'}`);
             const res = await axios.get(`https://api.github.com/user`, {
                 headers: {
                     'Authorization': `token ${access_token}`

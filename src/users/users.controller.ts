@@ -166,10 +166,10 @@ export class UsersController {
     async updateUser(
         @Req() request: Request,
         @Body() user_update_dto: userUpdateDTO,
-        @UploadedFile() file: Express.Multer.File
+        @UploadedFile() profileImage: Express.Multer.File
     ) {
-        console.log(file)
-        if (file) { user_update_dto.profileImage = file.path.replace("\\", "/"); }
+        console.log(profileImage)
+        if (profileImage) { user_update_dto.profileImage = profileImage.path.replace("\\", "/"); }
         return await this._usersService.updateUser(request.headers.authorization.replace('Bearer ', ''), user_update_dto)
     }
 
