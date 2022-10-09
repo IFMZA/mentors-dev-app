@@ -6,8 +6,7 @@ import { IsOptional, IsString } from 'class-validator';
 class slotUpdateDTO {
     @ApiProperty({ example: "2022-08-25" })
     @IsOptional()
-    @IsDate()
-    availableDate: Date;
+    availableDate: string;
 
     @ApiProperty({ required: false, example: "09:00" })
     @IsOptional()

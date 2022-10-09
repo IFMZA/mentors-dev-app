@@ -16,7 +16,7 @@ import { IToken } from '../models/auth/tokens.model';
 import commentInsertDTO from './DTOs/comment.insert';
 import commentUpdateDTO from './DTOs/comment.update';
 
-import { generateUUID } from 'src/common/utils/generalUtils';
+import { generateUUID, getImagePath } from 'src/common/utils/generalUtils';
 
 
 
@@ -32,7 +32,7 @@ export class CommentsService {
         @InjectModel(USER_MODEL_NAME) private _userModel: Model<IUser>,
         @InjectModel(TOKEN_MODEL_NAME) private _tokenModel: Model<IToken>) { }
 
-    async createComment(token: string, comment_insert_dto: commentInsertDTO) {
+    async createComment(base_url: string, token: string, comment_insert_dto: commentInsertDTO) {
         console.log('create comment');
         let userId = "";
         // get user id from token
@@ -46,7 +46,21 @@ export class CommentsService {
             createdAt: Date.now()
         });
         const result = await comment_insert.save();
-        return result;
+
+
+        const found_user = await this.findUser({ userId: userId });
+        let creation_return = {};
+        if (found_user) {
+            creation_return = {
+                ...result.toJSON(),
+                user: {
+                    userId: userId,
+                    name: found_user.name,
+                    image: getImagePath(base_url, found_user.profileImage)
+                }
+            }
+        }
+        return creation_return;
     }
 
 
@@ -95,7 +109,7 @@ export class CommentsService {
             //Get User Details For Comment
             const found_user = await this.findUser({ userId: commentItem.userId });
             if (found_user)
-                commentItem.user = { userId: found_user.userId, name: found_user.name, image: found_user.authMethod == AuthMethods.LOCAL ? base_url + found_user.profileImage : found_user.profileImage };
+                commentItem.user = { userId: found_user.userId, name: found_user.name, image: getImagePath(base_url, found_user.profileImage) };
             else
                 commentItem.user = { userId: '', name: 'anonymous', image: '' };
 
@@ -107,7 +121,7 @@ export class CommentsService {
                 _reply = JSON.parse(JSON.stringify(reply_item));
                 const found_user_reply = await this.findUser({ userId: commentItem.userId });
                 if (found_user_reply)
-                    _reply.user = { userId: found_user_reply.userId, name: found_user_reply.name, image: found_user_reply.authMethod == AuthMethods.LOCAL ? base_url + found_user_reply.profileImage : found_user_reply.profileImage };
+                    _reply.user = { userId: found_user_reply.userId, name: found_user_reply.name, image: getImagePath(base_url, found_user_reply.profileImage) };
                 else
                     _reply.user = { userId: '', name: 'anonymous', image: '' };
                 new_replies.push(_reply);

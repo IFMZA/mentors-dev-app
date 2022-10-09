@@ -8,6 +8,7 @@ export const MENTOR_AVAILABLE_SLOT_MODEL_NAME = "mentor-slots";
 export const SESSION_MODEL_NAME = "mentor-session";
 export const NOTIFICATION_MODEL_NAME = "notification";
 export const MESSAGE_MODEL_NAME = "messages";
+export const IMAGES_UPLOAD_PATH = "files";
 
 
 

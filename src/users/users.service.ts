@@ -10,7 +10,7 @@ import { IToken } from '../models/auth/tokens.model';
 
 import user_google_insert_dto from './DTOs/user.google.insert';
 import userRegisterDTO from 'src/auth/DTOs/user.register';
-import { generateRandomNumber, generateUUID } from 'src/common/utils/generalUtils';
+import { generateRandomNumber, generateUUID, getImagePath } from 'src/common/utils/generalUtils';
 import { comparePasswords, getHashed } from '../common/utils/hashPassword'
 import { get_token } from 'src/common/auth/tokenGenerator';
 import user_github_insert_dto from './DTOs/user.github.insert';
@@ -246,23 +246,28 @@ export class UsersService {
         return { foundUser, parsedEmail: createdBody.email };
     }
 
-    async updateUser(token: string, user_update_dto: userUpdateDTO) {
+    async updateUser(token: string, user_update_dto: userUpdateDTO, base_url: string) {
         console.log('update user basic');
         let userId = "";
         // get user id from token
         const foundToken = await this._tokenModel.findOne({ token: token });
         userId = foundToken.userId;
 
-        return await this._userModel.findOneAndUpdate({
+        const new_user = await this._userModel.findOneAndUpdate({
             userId: userId
         }, user_update_dto, { upsert: false, new: true });
+
+        new_user.profileImage = getImagePath(base_url, new_user.profileImage);
+
+        return new_user;
     }
 
-    async getMentorById(mentor_id: string) {
+    async getMentorById(base_url: string, mentor_id: string) {
         const found_user = await this.findOne({ userId: mentor_id, role: AppRoles.MENTOR });
         if (!found_user) {
             throw new NotFoundException({ message: 'user not found' });
         }
+        found_user.profileImage = getImagePath(base_url, found_user.profileImage);
         return found_user;
     }
 
@@ -308,7 +313,7 @@ export class UsersService {
 
         const found_users = await this._userModel.find(query, {}, { skip: _skip, limit: MENTORS_LIST_PAGE_SIZE }).sort(sortQuery);
         found_users.forEach(element => {
-            element.profileImage = element.authMethod == AuthMethods.LOCAL && element.profileImage ? base_url + element.profileImage : element.profileImage
+            element.profileImage = getImagePath(base_url, element.profileImage);
         });
         return found_users;
     }

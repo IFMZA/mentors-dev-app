@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 
-export function generateUUID() : string {
+import { IMAGES_UPLOAD_PATH } from 'src/common/constants';
+
+export function generateUUID(): string {
     let u = "";
     const m = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
     let i = 0;
@@ -18,4 +20,20 @@ export function generateUUID() : string {
 
 export const generateRandomNumber = (digits: number) => {
     return Math.floor(Math.random() * (9 * Math.pow(10, digits - 1))) + Math.pow(10, digits - 1);
+}
+
+
+export const getImagePath = (base_url: string, image_name: string): string => {
+    if (image_name == null ||
+        image_name == undefined ||
+        image_name == "") {
+        return "No_Image";
+    }
+    else if (image_name.includes('http')) {
+        return image_name;
+    }
+    else {
+        const full_path = (base_url + image_name).replace("\\", "/");
+        return full_path;
+    }
 }

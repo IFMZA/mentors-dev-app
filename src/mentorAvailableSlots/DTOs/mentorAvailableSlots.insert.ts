@@ -8,8 +8,7 @@ class slotInsertDTO {
 
     @ApiProperty({ example: "2022-08-25" })
     @IsDefined()
-    @IsDate()
-    availableDate: Date;
+    availableDate: string;
 
     @ApiProperty({ example: "09:00" })
     @IsDefined()

@@ -153,7 +153,7 @@ export class UsersController {
 
     @ApiConsumes('multipart/form-data')
     @Put('/update')
-    @UseInterceptors(FileInterceptor('file', {
+    @UseInterceptors(FileInterceptor('profileImage', {
         storage: diskStorage({
             destination: './files',
             filename: (req, file, callback) => {
@@ -169,15 +169,18 @@ export class UsersController {
         @UploadedFile() profileImage: Express.Multer.File
     ) {
         console.log(profileImage)
+        const base_url = `${request.protocol}://${request.get('Host')}/`;
         if (profileImage) { user_update_dto.profileImage = profileImage.path.replace("\\", "/"); }
-        return await this._usersService.updateUser(request.headers.authorization.replace('Bearer ', ''), user_update_dto)
+        return await this._usersService.updateUser(request.headers.authorization.replace('Bearer ', ''), user_update_dto, base_url)
     }
 
     @Get('/getMentorById/:mentor_id')
     async getMentorById(
+        @Req() request: Request,
         @Param('mentor_id') mentor_id: string
     ) {
-        return await this._usersService.getMentorById(mentor_id);
+        const base_url = `${request.protocol}://${request.get('Host')}/`;
+        return await this._usersService.getMentorById(base_url, mentor_id);
     }
 
     @Get('/getMentors')

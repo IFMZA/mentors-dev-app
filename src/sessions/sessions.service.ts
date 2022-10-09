@@ -61,7 +61,7 @@ export class SessionsService {
 
 
     async update(sessionId: string, session_update_dto: sessionUpdateDTO) {
-        console.log('update package');
+        console.log('update session');
         const found_session = await this._sessionModel.findOne({
             sessionId: sessionId
         });

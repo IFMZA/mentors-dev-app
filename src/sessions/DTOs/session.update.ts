@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined } from 'class-validator';
+import { IsDefined, IsOptional } from 'class-validator';
+import { sessionStatus } from 'src/common/constants';
 
 class sessionUpdateDTO {
     @ApiProperty()
@@ -15,6 +16,11 @@ class sessionUpdateDTO {
     @ApiProperty()
     @IsDefined()
     timeZone: string;
+
+
+    @ApiProperty({ enum: Object.values(sessionStatus) })
+    @IsOptional()
+    status: string;
 }
 
 export default sessionUpdateDTO;

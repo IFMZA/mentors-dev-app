@@ -14,7 +14,7 @@ import { IToken } from '../models/auth/tokens.model';
 import replyInsertDTO from './DTOs/reply.insert';
 import replyUpdateDTO from './DTOs/reply.update';
 
-import { generateUUID } from 'src/common/utils/generalUtils';
+import { generateUUID, getImagePath } from 'src/common/utils/generalUtils';
 
 
 
@@ -81,7 +81,7 @@ export class RepliesService {
                 _reply.user = {
                     userId: found_user.userId,
                     name: found_user.name,
-                    image: found_user.authMethod == AuthMethods.LOCAL ? base_url + found_user.profileImage : found_user.profileImage
+                    image: getImagePath(base_url, found_user.profileImage)
                 };
             }
             else {

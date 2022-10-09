@@ -20,7 +20,8 @@ export class CommentsController {
         @Req() request: Request,
         @Body() comment_insert_dto: commentInsertDTO,
     ) {
-        return await this._CommentsService.createComment(request.headers.authorization.replace('Bearer ', ''), comment_insert_dto);
+        const base_url = `${request.protocol}://${request.get('Host')}/`;
+        return await this._CommentsService.createComment(base_url, request.headers.authorization.replace('Bearer ', ''), comment_insert_dto);
     }
 
     @Put('/update/:commentId')

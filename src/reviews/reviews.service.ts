@@ -2,7 +2,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AuthMethods, REVIEWS_LIST_PAGE_SIZE, REVIEW_MODEL_NAME, SESSION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
+import { AuthMethods, REVIEWS_LIST_PAGE_SIZE, REVIEW_MODEL_NAME, sessionStatus, SESSION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
 
 import { IReview } from '../models/reviews.model';
 
@@ -16,7 +16,7 @@ import { IToken } from '../models/auth/tokens.model';
 import reviewInsertDTO from './DTOs/review.insert';
 import reviewUpdateDTO from './DTOs/review.update';
 
-import { generateUUID } from 'src/common/utils/generalUtils';
+import { generateUUID, getImagePath } from 'src/common/utils/generalUtils';
 
 
 
@@ -38,6 +38,9 @@ export class ReviewsService {
             throw new NotFoundException({ message: 'developer not found' });
         if (!await this.validate_sessionId(review_insert_dto.sessionId))
             throw new NotFoundException({ message: 'session not found' });
+        if (!await this.validate_session_Finished(review_insert_dto.sessionId))
+            throw new NotFoundException({ message: 'session not completed yet' });
+
 
         const review_insert = new this._reviewModel({
             reviewId: generateUUID(),
@@ -79,7 +82,7 @@ export class ReviewsService {
             //Get User Details For Review
             const found_user = await this.findUser({ userId: _review.developerId });
             if (found_user)
-                _review.user = { userId: found_user.userId, name: found_user.name, image: found_user.authMethod == AuthMethods.LOCAL ? base_url + found_user.profileImage : found_user.profileImage };
+                _review.user = { userId: found_user.userId, name: found_user.name, image: getImagePath(base_url, found_user.profileImage) };
             else
                 _review.user = { userId: '', name: 'anonymous', image: '' };
 
@@ -132,6 +135,12 @@ export class ReviewsService {
     async validate_sessionId(session_id: string) {
         let valid = true;
         const found_session = await this._sessionModel.findOne({ sessionId: session_id });
+        if (!found_session) { valid = false; }
+        return valid;
+    }
+    async validate_session_Finished(session_id: string) {
+        let valid = true;
+        const found_session = await this._sessionModel.findOne({ sessionId: session_id, status: sessionStatus.COMPLETED });
         if (!found_session) { valid = false; }
         return valid;
     }
