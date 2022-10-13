@@ -86,89 +86,117 @@ export class UsersService {
         //send email with the verification code
         //insert in verification collection
     }
-    async createUserWithGoogle(google_user: user_google_insert_dto, role: string) {
+    async createUserWithGoogle(base_url: string, google_user: user_google_insert_dto, role: string) {
         console.log('createUserWithGoogle');
         console.log(google_user);
-        const user_insert = {
-            name: google_user.firstName + " " + google_user.lastName,
-            email: google_user.email,
-            profileImage: google_user.profileImg.original ? google_user.profileImg.original : google_user.profileImg.thumbnail,
-            authMethod: AuthMethods.GOOGLE,
-            isVerified: true,
-            authCredentials: {
-                googleId: google_user.googleId
-            }
-        };
 
-        if (!await this.findOne({ "authCredentials.googleId": google_user.googleId })) {
-            user_insert['userId'] = generateUUID();
-            user_insert['role'] = role;
+        const found_user = await this.findOne({ "authCredentials.googleId": google_user.googleId });
+        let _return = {};
+        if (!found_user) {
+            const user_insert = {
+                userId: generateUUID(),
+                name: google_user.firstName + " " + google_user.lastName,
+                email: google_user.email,
+                profileImage: google_user.profileImg.original ? google_user.profileImg.original : google_user.profileImg.thumbnail,
+                authMethod: AuthMethods.GOOGLE,
+                role: role,
+                isVerified: true,
+                authCredentials: {
+                    googleId: google_user.googleId
+                }
+            };
+            const result = await this._userModel.findOneAndUpdate({
+                "authCredentials.googleId": google_user.googleId
+            }, user_insert, { upsert: true, new: true })
+            const token = get_token(user_insert['userId']);
+            const token_insert = new this._tokenModel({
+                token: token,
+                userId: user_insert['userId']
+            });
+            await token_insert.save();
+
+            _return = {
+                ...result.toJSON(),
+                token: token
+            };
         }
-        const result = await this._userModel.findOneAndUpdate({
-            "authCredentials.googleId": google_user.googleId
-        }, user_insert, { upsert: true, new: true })
+        else {
+            const token = get_token(found_user.userId);
+            const token_insert = new this._tokenModel({
+                token: token,
+                userId: found_user.userId
+            });
+            await token_insert.save();
 
-
-        // const result = await user_insert.save();
-        const token = get_token(user_insert['userId']);
-        const token_insert = new this._tokenModel({
-            token: token,
-            userId: user_insert['userId']
-        });
-        await token_insert.save();
-        const _return = {
-            ...result.toJSON(),
-            token: token
-        };
-        console.log('user - insert - result');
-        console.log(_return);
+            found_user.profileImage = getImagePath(base_url, found_user.profileImage);
+            _return = {
+                ...found_user,
+                token: token
+            };
+        }
         return _return;
     }
 
 
-    async createUserWithGithub(github_user: user_github_insert_dto, role: string) {
+    async createUserWithGithub(base_url: string, github_user: user_github_insert_dto, role: string) {
         console.log('createUserWithGitHub');
         console.log(github_user);
-        const user_insert = {
-            name: github_user.name,
-            email: github_user.email,
-            profileImage: github_user.avatar_url,
-            bio: github_user.bio,
-            location: { country: github_user.location },
-            authMethod: AuthMethods.GITHUB,
-            isVerified: true,
-            authCredentials: {
-                id: github_user.id,
-                type: github_user.type,
-                followers: github_user.followers,
-                following: github_user.following,
-                node_id: github_user.node_id,
-            }
-        };
 
-        if (!await this.findOne({ "authCredentials.id": github_user.id })) {
+
+        const found_user = await this.findOne({ "authCredentials.id": github_user.id });
+        let _return = {};
+        if (!found_user) {
             console.log('not-found')
+            const user_insert = {
+                name: github_user.name,
+                email: github_user.email,
+                profileImage: github_user.avatar_url,
+                bio: github_user.bio,
+                location: { country: github_user.location },
+                authMethod: AuthMethods.GITHUB,
+                isVerified: true,
+                authCredentials: {
+                    id: github_user.id,
+                    type: github_user.type,
+                    followers: github_user.followers,
+                    following: github_user.following,
+                    node_id: github_user.node_id,
+                }
+            };
             user_insert['userId'] = generateUUID();
             user_insert['role'] = role;
-        }
-        const result = await this._userModel.findOneAndUpdate({
-            "authCredentials.id": github_user.id
-        }, user_insert, { upsert: true, new: true })
+            const result = await this._userModel.findOneAndUpdate({
+                "authCredentials.id": github_user.id
+            }, user_insert, { upsert: true, new: true })
 
-        // const result = await user_insert.save();
-        const token = get_token(user_insert['userId']);
-        const token_insert = new this._tokenModel({
-            token: token,
-            userId: user_insert['userId']
-        });
-        await token_insert.save();
-        const _return = {
-            ...result.toJSON(),
-            token: token
-        };
-        console.log('send email')
-        console.log('user - insert - result');
-        console.log(_return);
+            // const result = await user_insert.save();
+            const token = get_token(user_insert['userId']);
+            const token_insert = new this._tokenModel({
+                token: token,
+                userId: user_insert['userId']
+            });
+            await token_insert.save();
+
+            _return = {
+                ...result.toJSON(),
+                token: token
+            };
+        }
+        else {
+
+            const token = get_token(found_user.userId);
+            const token_insert = new this._tokenModel({
+                token: token,
+                userId: found_user.userId
+            });
+            await token_insert.save();
+
+            found_user.profileImage = getImagePath(base_url, found_user.profileImage);
+            _return = {
+                ...found_user,
+                token: token
+            };
+        }
         return _return;
     }
 
@@ -271,6 +299,15 @@ export class UsersService {
         return found_user;
     }
 
+    async getDeveloperById(base_url: string, developer_id: string) {
+        const found_user = await this.findOne({ userId: developer_id, role: AppRoles.DEVELOPER });
+        if (!found_user) {
+            throw new NotFoundException({ message: 'user not found' });
+        }
+        found_user.profileImage = getImagePath(base_url, found_user.profileImage);
+        return found_user;
+    }
+
     async getMentorsByFilterSort(base_url: string, mentor_filter: mentor_filter_dto) {
         const _skip = MENTORS_LIST_PAGE_SIZE * mentor_filter.pageId;
 
@@ -306,11 +343,14 @@ export class UsersService {
             ];
         }
 
-        if (mentor_filter.country) { query["location.country"] = { $regex: new RegExp(mentor_filter.country.trim(), 'i') } }
-        if (mentor_filter.language) { query["languages"] = { $in: [mentor_filter.language] } }
-        if (mentor_filter.skill) { query["skills"] = { $in: [mentor_filter.skill] } }
-        if (mentor_filter.onlineStatus) { query["onlineStatus"] = mentor_filter.onlineStatus; }
+        // if (mentor_filter.country) { query["location.country"] = { $regex: new RegExp(mentor_filter.country.trim(), 'i') } }
+        if (mentor_filter.country) { query["location.country"] = { $in: typeof mentor_filter.country == "string" ? [mentor_filter.country] : mentor_filter.country } }
+        if (mentor_filter.language) { query["languages"] = { $in: typeof mentor_filter.language == "string" ? [mentor_filter.language] : mentor_filter.language } }
+        if (mentor_filter.skill) { query["skills"] = { $in: typeof mentor_filter.skill == "string" ? [mentor_filter.skill] : mentor_filter.skill } }
+        if (mentor_filter.onlineStatus) { query["onlineStatus"] = mentor_filter.onlineStatus }
 
+        console.log('filter:')
+        console.log(JSON.stringify(query))
         const found_users = await this._userModel.find(query, {}, { skip: _skip, limit: MENTORS_LIST_PAGE_SIZE }).sort(sortQuery);
         found_users.forEach(element => {
             element.profileImage = getImagePath(base_url, element.profileImage);

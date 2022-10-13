@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { MENTOR_PACKAGE_MODEL_NAME, PackageTypes, sessionStatus, SESSION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
+import { AppRoles, MENTOR_PACKAGE_MODEL_NAME, PackageTypes, PAYMENT_MODEL_NAME, sessionStatus, SESSION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
 import { create_session_meeting, delete_session_meeting } from '../common/utils/googleMeetCreator'
 import { ISession } from '../models/sessions.model';
 import { IToken } from '../models/auth/tokens.model';
@@ -12,6 +12,9 @@ import sessionInsertDTO from './DTOs/session.insert';
 import { generateUUID } from 'src/common/utils/generalUtils';
 import sessionUpdateDTO from './DTOs/session.update';
 import googleMeetResponseDTO from './DTOs/google.meet.response';
+import { IPayment } from 'src/models/payments.model';
+import paymentInsertDTO from './DTOs/payment.insert';
+import { IUser } from 'src/models/users.model';
 
 
 
@@ -21,7 +24,9 @@ import googleMeetResponseDTO from './DTOs/google.meet.response';
 export class SessionsService {
     constructor(@InjectModel(SESSION_MODEL_NAME) private _sessionModel: Model<ISession>,
         @InjectModel(TOKEN_MODEL_NAME) private _tokenModel: Model<IToken>,
-        @InjectModel(MENTOR_PACKAGE_MODEL_NAME) private _packageModel: Model<IMentorPackage>) { }
+        @InjectModel(MENTOR_PACKAGE_MODEL_NAME) private _packageModel: Model<IMentorPackage>,
+        @InjectModel(PAYMENT_MODEL_NAME) private _paymentModel: Model<IPayment>,
+        @InjectModel(USER_MODEL_NAME) private _userModel: Model<IUser>) { }
 
     async createSession(token: string, session_insert_dto: sessionInsertDTO) {
         console.log('create session');
@@ -152,6 +157,50 @@ export class SessionsService {
             }
         }
         return null;
+    }
+
+
+    async registerPayment(payment_insert_dto: paymentInsertDTO) {
+        console.log('register-payment')
+
+        const found_session = await this._sessionModel.findOne({ sessionId: payment_insert_dto.sessionId });
+        if (!found_session)
+            throw new NotFoundException({ message: "session doesn't exist" });
+
+
+        if (!await this.validate_userId(found_session.mentorId))
+            throw new NotFoundException({ message: 'mentor not found' });
+        if (!await this.validate_userId(found_session.developerId))
+            throw new NotFoundException({ message: 'developer not found' });
+
+        console.log(found_session);
+        const payment_insert = new this._paymentModel({
+            paymentId: generateUUID(),
+            sessionId: payment_insert_dto.sessionId,
+            mentorId: found_session.mentorId,
+            developerId: found_session.developerId,
+            amount: payment_insert_dto.amount,
+            currency: payment_insert_dto.currency
+        });
+        const result_payment = await payment_insert.save();
+        console.log(result_payment);
+        const result_balance = await this._userModel.findOneAndUpdate({
+            userId: found_session.mentorId, role: AppRoles.MENTOR
+        }, { $inc: { wallletBalance: payment_insert_dto.amount } }, { upsert: false, new: true });
+        console.log(result_balance);
+        const _return = {
+            payment: result_payment.toJSON(),
+            mentor: result_balance.toJSON()
+        };
+
+        return _return;
+    }
+
+    async validate_userId(user_id: string) {
+        let valid = true;
+        const found_user = await this._userModel.findOne({ userId: user_id });
+        if (!found_user) { valid = false; }
+        return valid;
     }
 
 }

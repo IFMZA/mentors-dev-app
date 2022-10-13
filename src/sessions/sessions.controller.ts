@@ -5,6 +5,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import sessionInsertDTO from './DTOs/session.insert';
 import sessionUpdateDTO from './DTOs/session.update';
+import paymentInsertDTO from './DTOs/payment.insert';
 
 
 
@@ -57,6 +58,14 @@ export class SessionsController {
         @Req() request: Request
     ) {
         return await this._sessionsService.getSelfSessions(request.headers.authorization.replace('Bearer ', ''));
+    }
+
+    @Post('/registerPayment')
+    async registerPayment(
+        @Req() request: Request,
+        @Body() payment_insert_dto: paymentInsertDTO,
+    ) {
+        return await this._sessionsService.registerPayment(payment_insert_dto);
     }
 }
 

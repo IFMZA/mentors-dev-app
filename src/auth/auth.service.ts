@@ -32,7 +32,7 @@ export class AuthService {
 
 
     // Login With Google
-    async createUserWithGoogle(access_token: string, role: string) {
+    async createUserWithGoogle(base_url: string, access_token: string, role: string) {
         if (role) {
             if (!AppRoles.DEVELOPER.includes(role) && !AppRoles.MENTOR.includes(role)) {
                 throw new BadRequestException({ message: "role not found" })
@@ -49,13 +49,14 @@ export class AuthService {
             original: googleUserRes.picture.split("=s")[0] + '=s500-c',
             thumbnail: googleUserRes.picture
         };
-        const user = await this._userServise.createUserWithGoogle(googleUser, role)
+        const user = await this._userServise.createUserWithGoogle(base_url, googleUser, role)
         return user;
     }
 
 
     private async getGoogleUserData(access_token: string) {
         console.log('google-Auth');
+        console.log(access_token);
         let data;
         const params = {
             alt: 'json',
@@ -92,7 +93,7 @@ export class AuthService {
 
 
 
-    async createUserWithGithub(access_token: string, role: string) {
+    async createUserWithGithub(base_url: string, access_token: string, role: string) {
         console.log('createUserWithGithub');
         if (role) {
             if (!AppRoles.DEVELOPER.includes(role) && !AppRoles.MENTOR.includes(role)) {
@@ -123,7 +124,7 @@ export class AuthService {
         gitHubUser.node_id = githubUserRes.node_id;
         gitHubUser.role = role;
         console.log('gotoUserService');
-        const user = await this._userServise.createUserWithGithub(gitHubUser, role)
+        const user = await this._userServise.createUserWithGithub(base_url, gitHubUser, role)
         return user;
     }
 

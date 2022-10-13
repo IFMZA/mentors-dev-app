@@ -9,8 +9,6 @@ export const PaymentsSchema = new mongoose.Schema({
     currency: { type: String, required: false },
     mentorId: { type: String, required: false },
     developerId: { type: String, required: false },
-    balanceBefore: { type: Number, required: false },
-    balanceAfter: { type: Number, required: false },
     createdAt: { type: Date, default: Date.now, required: false }
 
 }, { collection: "Payments" });
@@ -22,7 +20,5 @@ export interface IPayment {
     currency: string;
     mentorId: string;
     developerId: string;
-    balanceBefore: number;
-    balanceAfter: number;
     createdAt: Date;
 };

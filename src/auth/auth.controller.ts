@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import userRegisterDTO from './DTOs/user.register';
@@ -42,18 +43,24 @@ export class AuthController {
     @ApiBody({ type: googleAuthDTO })
     @Post('/google')
     async loginWithGoogle(
-        @Body() google_auth_dto: googleAuthDTO
+        @Req() request: Request,
+        @Body() google_auth_dto: googleAuthDTO,
     ) {
-        return await this._authService.createUserWithGoogle(google_auth_dto.access_token, google_auth_dto.role)
+        console.log('input:')
+        console.log(google_auth_dto)
+        const base_url = `${request.protocol}://${request.get('Host')}/`;
+        return await this._authService.createUserWithGoogle(base_url, google_auth_dto.access_token, google_auth_dto.role)
     }
 
     //- GITHUB
     @ApiBody({ type: githubAuthDTO })
     @Post('/github')
     async loginWithGitHub(
+        @Req() request: Request,
         @Body() github_auth_dto: githubAuthDTO
     ) {
-        return await this._authService.createUserWithGithub(github_auth_dto.access_token, github_auth_dto.role);
+        const base_url = `${request.protocol}://${request.get('Host')}/`;
+        return await this._authService.createUserWithGithub(base_url, github_auth_dto.access_token, github_auth_dto.role);
     }
 
 

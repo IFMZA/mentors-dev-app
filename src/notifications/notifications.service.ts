@@ -11,6 +11,7 @@ import { IToken } from '../models/auth/tokens.model';
 // import packageInsertDTO from './DTOs/package.insert';
 import { generateUUID } from 'src/common/utils/generalUtils';
 import NotificationInsertDTO from './DTOs/notification.insert';
+import { send } from 'src/common/utils/notificationSender';
 // import packageUpdateDTO from './DTOs/package.update';
 
 
@@ -47,6 +48,7 @@ export class NotificationsService {
             createdAt: Date.now()
         });
         const result = await notid_insert.save();
+        send(notif_insert_dto.toId, notif_template.title, notif_template.body);
         return result;
     }
 

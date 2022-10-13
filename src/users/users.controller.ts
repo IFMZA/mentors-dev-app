@@ -183,6 +183,15 @@ export class UsersController {
         return await this._usersService.getMentorById(base_url, mentor_id);
     }
 
+    @Get('/getDeveloperById/:developer_id')
+    async getDeveloperById(
+        @Req() request: Request,
+        @Param('developer_id') developer_id: string
+    ) {
+        const base_url = `${request.protocol}://${request.get('Host')}/`;
+        return await this._usersService.getDeveloperById(base_url, developer_id);
+    }
+
     @Get('/getMentors')
     async getMentors(
         @Req() req: Request,
