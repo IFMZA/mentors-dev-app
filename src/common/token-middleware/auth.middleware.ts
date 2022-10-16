@@ -16,7 +16,8 @@ const exculded_routes = [
     'getAvailableSlots',
     'getReviews',
     'getComments',
-    '/test'
+    'files',
+    'favicon.ico'
 ];
 
 @Injectable()
