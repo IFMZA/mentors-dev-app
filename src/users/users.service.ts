@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AppRoles, AuthMethods, MentorOrderByProperties, MENTORS_LIST_PAGE_SIZE, OrderByOrdering, REGISTERATION_VERIFICATION_MODEL_NAME, TOKEN_MODEL_NAME, USER_MODEL_NAME } from 'src/common/constants';
@@ -93,6 +93,9 @@ export class UsersService {
         const found_user = await this.findOne({ "authCredentials.googleId": google_user.googleId });
         let _return = {};
         if (!found_user) {
+            if (!role || role == "" || role == null) {
+                throw new BadRequestException({ message: "role not found" })
+            }
             const user_insert = {
                 userId: generateUUID(),
                 name: google_user.firstName + " " + google_user.lastName,
@@ -146,6 +149,9 @@ export class UsersService {
         const found_user = await this.findOne({ "authCredentials.id": github_user.id });
         let _return = {};
         if (!found_user) {
+            if (!role || role == "" || role == null) {
+                throw new BadRequestException({ message: "role not found" })
+            }
             console.log('not-found')
             const user_insert = {
                 name: github_user.name,
