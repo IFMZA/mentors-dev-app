@@ -21,7 +21,7 @@ export async function create_session_meeting(date: string, startTime: string, me
     const result = await Meeting('create', {
         clientId: '761180003671-ggq7q15dt9mf9m2hmilmar06tj7b0j2a.apps.googleusercontent.com',
         clientSecret: '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',
-        refreshToken: '1//04FmxtmpaMYN7CgYIARAAGAQSNwF-L9IrN_GovgFzTbK6pnGePg7fa6HE_YO35GQ5ZNCpoFlHGtrT9xXBOiMfIc-auBpfK3kNLDg',
+        refreshToken: '1//04zF4R9N57r0zCgYIARAAGAQSNwF-L9IraQdH5_3R1smOeSoUbVZzcSyXWKrzE317_jd1c1E-49bm3-ZSPtVh6N6lBvBl7K6LO4k',
         date: date,
         time: startTime,
         meeting_duration: meeting_duration,
@@ -50,7 +50,7 @@ export async function delete_session_meeting(event_id: string) {
     const result = await Meeting('delete', {
         clientId: '761180003671-ggq7q15dt9mf9m2hmilmar06tj7b0j2a.apps.googleusercontent.com',
         clientSecret: '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',
-        refreshToken: '1//04FmxtmpaMYN7CgYIARAAGAQSNwF-L9IrN_GovgFzTbK6pnGePg7fa6HE_YO35GQ5ZNCpoFlHGtrT9xXBOiMfIc-auBpfK3kNLDg',
+        refreshToken: '1//04zF4R9N57r0zCgYIARAAGAQSNwF-L9IraQdH5_3R1smOeSoUbVZzcSyXWKrzE317_jd1c1E-49bm3-ZSPtVh6N6lBvBl7K6LO4k',
         eventId: event_id
     });
     _response.meet_link = result.data.hangoutLink ? result.data.hangoutLink : ""
@@ -59,4 +59,22 @@ export async function delete_session_meeting(event_id: string) {
     _response.end = result.data.end && result.data.end.dateTime ? result.data.end.dateTime : ""
     _response.busy = result.data.busy ? result.data.busy : false
     return _response;
+}
+
+
+
+export async function get_session_meeting(event_id: string) {
+    // const _response = new googleMeetResponseDTO();
+    const result = await Meeting('get', {
+        clientId: '761180003671-ggq7q15dt9mf9m2hmilmar06tj7b0j2a.apps.googleusercontent.com',
+        clientSecret: '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',
+        refreshToken: '1//04zF4R9N57r0zCgYIARAAGAQSNwF-L9IraQdH5_3R1smOeSoUbVZzcSyXWKrzE317_jd1c1E-49bm3-ZSPtVh6N6lBvBl7K6LO4k',
+        eventId: event_id
+    });
+    // _response.meet_link = result.data.hangoutLink ? result.data.hangoutLink : ""
+    // _response.event_id = result.data.id ? result.data.id : ""
+    // _response.start = result.data.start && result.data.start.dateTime ? result.data.start.dateTime : ""
+    // _response.end = result.data.end && result.data.end.dateTime ? result.data.end.dateTime : ""
+    // _response.busy = result.data.busy ? result.data.busy : false
+    return result;
 }

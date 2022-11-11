@@ -60,12 +60,24 @@ export class SessionsController {
         return await this._sessionsService.getSelfSessions(request.headers.authorization.replace('Bearer ', ''));
     }
 
+
+
     @Post('/registerPayment')
     async registerPayment(
         @Req() request: Request,
         @Body() payment_insert_dto: paymentInsertDTO,
     ) {
         return await this._sessionsService.registerPayment(payment_insert_dto);
+    }
+
+
+
+
+    @Get('/admin/getSessions/:mentorId')
+    async getMentorSessions_admin(
+        @Param('mentorId') mentorId: string,
+    ) {
+        return await this._sessionsService.findByMentorId_admin(mentorId);
     }
 }
 

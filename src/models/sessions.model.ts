@@ -14,6 +14,9 @@ export const SessionsSchema = new mongoose.Schema({
     endTime: { type: Date, required: false },
     timeZone: { type: String, required: false },
     status: { type: String, enum: [sessionStatus.UPCOMING, sessionStatus.COMPLETED, sessionStatus.CANCELED], required: false },
+    paymentStatus:  { type: Number, required: false },
+    amount:  { type: Number, required: false },
+    currency:  { type: Number, required: false },
     createdAt: { type: Date, default: Date.now, required: false },
     updatedAt: { type: Date, default: Date.now, required: false }
 }, { collection: "Sessions" });
@@ -30,6 +33,9 @@ export interface ISession {
     endTime: Date;
     timeZone: string;
     status: string;
+    paymentStatus: number;
+    amount: number;
+    currency: number;
     createdAt: Date;
     updatedAt: Date;
 };
