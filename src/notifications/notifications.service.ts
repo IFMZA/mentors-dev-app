@@ -8,11 +8,9 @@ import { INotification } from '../models/notifications.model';
 import { IUser } from '../models/users.model';
 
 import { IToken } from '../models/auth/tokens.model';
-// import packageInsertDTO from './DTOs/package.insert';
 import { generateUUID } from 'src/common/utils/generalUtils';
 import NotificationInsertDTO from './DTOs/notification.insert';
 import { send } from 'src/common/utils/notificationSender';
-// import packageUpdateDTO from './DTOs/package.update';
 
 
 
@@ -25,7 +23,6 @@ export class NotificationsService {
         @InjectModel(TOKEN_MODEL_NAME) private _tokenModel: Model<IToken>) { }
 
     async createNotification(token: string, notif_insert_dto: NotificationInsertDTO) {
-        console.log('create notif');
         let userId = "";
         // get user id from token
         const foundToken = await this._tokenModel.findOne({ token: token });
@@ -51,20 +48,6 @@ export class NotificationsService {
         send(notif_insert_dto.toId, notif_template.title, notif_template.body);
         return result;
     }
-
-
-
-    // async update(packageId: string, package_update_dto: packageUpdateDTO) {
-    //     console.log('update package');
-    //     return await this._packageModel.findOneAndUpdate({
-    //         packageId: packageId
-    //     }, package_update_dto, { upsert: false, new: true });
-    // }
-
-    // async delete(packageId: string) {
-    //     console.log('delete package');
-    //     return await this._packageModel.findOneAndDelete({ packageId: packageId });
-    // }
 
     async findNotifications(token: string, IsNew: boolean) {
         let userId = "";

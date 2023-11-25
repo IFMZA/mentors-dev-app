@@ -24,14 +24,10 @@ export class AuthService {
 
 
     async register(user_register_dto: userRegisterDTO) {
-        console.log('user_register_dto');
-        console.log(user_register_dto);
         const user = await this._userServise.createUserBasic(user_register_dto);
         return user;
     }
 
-
-    // Login With Google
     async createUserWithGoogle(base_url: string, access_token: string, role: string) {
         if (role) {
             if (!AppRoles.DEVELOPER.includes(role) && !AppRoles.MENTOR.includes(role)) {
@@ -55,8 +51,6 @@ export class AuthService {
 
 
     private async getGoogleUserData(access_token: string) {
-        console.log('google-Auth');
-        console.log(access_token);
         let data;
         const params = {
             alt: 'json',
@@ -68,18 +62,10 @@ export class AuthService {
             })
             if (res.data) {
                 data = res.data
-                console.log(res.data)
             }
         } catch (error) {
-            console.log(error);
             if (error.response) {
-                // Request made and server responded
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-
                 throw new BadRequestException({ message: error.response.data })
-
             } else if (error.request) {
                 // The request was made but no response was received
                 console.log(error.request);
@@ -94,7 +80,6 @@ export class AuthService {
 
 
     async createUserWithGithub(base_url: string, access_token: string, role: string) {
-        console.log('createUserWithGithub');
         if (role) {
             if (!AppRoles.DEVELOPER.includes(role) && !AppRoles.MENTOR.includes(role)) {
                 throw new BadRequestException({ message: "role not found" })
@@ -106,10 +91,6 @@ export class AuthService {
         if (githubUserRes.name == "" || githubUserRes.name == null) {
             throw new BadRequestException({ message: "name not found" })
         }
-        // if(githubUserRes.email == "" || githubUserRes.email == null){
-        //     throw new BadRequestException({ message: "email not found" })
-        // }
-
 
         const gitHubUser = new user_github_insert_dto;
         gitHubUser.name = githubUserRes.name;
@@ -123,7 +104,6 @@ export class AuthService {
         gitHubUser.location = githubUserRes.location;
         gitHubUser.node_id = githubUserRes.node_id;
         gitHubUser.role = role;
-        console.log('gotoUserService');
         const user = await this._userServise.createUserWithGithub(base_url, gitHubUser, role)
         return user;
     }
@@ -132,7 +112,6 @@ export class AuthService {
     private async getGitHubUserData(access_token: string) {
         let data = null;
         try {
-            // const res2 = await axios.get(`https://api.github.com/users/${'user_name'}`);
             const res = await axios.get(`https://api.github.com/user`, {
                 headers: {
                     'Authorization': `token ${access_token}`
@@ -149,10 +128,6 @@ export class AuthService {
         } catch (error) {
             if (error.response) {
                 // Request made and server responded
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-
                 throw new BadRequestException({ message: error.response.data })
 
             } else if (error.request) {
@@ -168,8 +143,6 @@ export class AuthService {
 
 
     async login(user_login_dto: userLoginDTO) {
-        console.log('user_login_dto');
-        console.log(user_login_dto);
         const user = await this._userServise.checkLoginCredintials(user_login_dto.email, user_login_dto.password);
         return user;
     }
