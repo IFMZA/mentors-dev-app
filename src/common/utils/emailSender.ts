@@ -6,7 +6,7 @@
 const sgMail = require('@sendgrid/mail');
 import { REGISTRATION_EMAIL_VALIDATION } from '../email.templates';
 
-const SENDGRID_API_KEY = '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';
+const SENDGRID_API_KEY = '000';
 
 
 
@@ -15,7 +15,7 @@ export async function sendEmailVerification_Template(email, verify_code) {
     sgMail.setSubstitutionWrappers('{{', '}}'); // Configure the substitution tag wrappers globally
     const msg = {
         to: email,
-        from: 'support@techmentors.co',
+        from: 'support@demo.co',
         subject: 'Hello world',
         text: 'Hello plain world!',
         html: '<p>Hello HTML world!</p>',
